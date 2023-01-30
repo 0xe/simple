@@ -1,0 +1,15 @@
+let expt = function(a, n) { 
+    if (n == 0) { 
+        return 1; 
+    } else { 
+        let e = 1; let i = 0; 
+        while (i < n) { 
+            i = i+1;
+            e = e*a;
+        }
+        return e;
+    }
+};
+
+print(expt(2,2));
+print(expt(3,4));

@@ -1,0 +1,11 @@
+let a = 32;
+let b = 23;
+
+let add = function(a, b) {
+    return a + b;
+}
+
+print(add(3, 4));
+
+print(a != 3);
+print(b != 4);

@@ -1,0 +1,21 @@
+// print `x`th fib number
+let fib = function(x) {
+    if (x == 0 || x == 1) { return 1; }
+    else { return fib(x - 1) + fib(x - 2); }
+}
+
+
+let bench = function(x) {
+    let time_start = clock();
+    let fresult = fib(20);
+    let time_end = clock();
+
+    print("Time taken for fib(", x, "): ", time_end - time_start, "ms");
+};
+
+
+let x = 10;
+while (x > 0) {
+    bench(20);
+    x = x - 1;
+};
