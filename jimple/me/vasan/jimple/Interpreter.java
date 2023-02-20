@@ -97,6 +97,7 @@ public class Interpreter {
                 Object rhs = interpret(e.b.rhs, env);
                 switch (e.b.o) {
                     case PLUS:
+                        if (lhs instanceof String) return lhs + ((String) rhs);
                         return ((Number) lhs).doubleValue() + ((Number) rhs).doubleValue();
                     case MIN:
                         return ((Number) lhs).doubleValue() - ((Number) rhs).doubleValue();
