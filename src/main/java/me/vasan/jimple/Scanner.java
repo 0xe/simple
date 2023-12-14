@@ -26,11 +26,6 @@ import java.util.Map;
     // to eof is a comment
 */
 
-class RuntimeError extends Exception {
-    String message;
-    RuntimeError(String s) { this.message = s;}
-}
-
 class SyntaxError extends Exception {
     String message;
     SyntaxError(String s) { this.message = s;}
