@@ -5,6 +5,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 public class Jimple {
@@ -27,6 +29,18 @@ public class Jimple {
         if(rtype == RType.error) sawError = true;
     }
 
+	private static void compile(String name, String input) throws Exception {
+		try {
+			Scanner scanner = new Scanner(input);
+			List<Token> tokens = scanner.scanTokens();
+			Parser p = new Parser(tokens);
+			Pgm ast = p.parse();
+			(new Compiler(name)).compile(ast);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
     private static void run(String input, Environment env) throws Exception {
         try {
             Scanner scanner = new Scanner(input);
@@ -39,6 +53,11 @@ public class Jimple {
             e.printStackTrace();
         }
     }
+
+	private static void compileFile(String path) throws Exception {
+		byte[] bytes = Files.readAllBytes(Paths.get(path));
+		compile(path, new String(bytes, Charset.defaultCharset()));
+	}
 
     private static void runFile(String path) throws Exception {
         Environment env = new Environment();
@@ -63,10 +82,13 @@ public class Jimple {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length > 1) {
+        if (args.length > 2) {
             usage();
         } else if (args.length == 1) {
-            runFile(args[0]);
+            compileFile(args[0]);
+        } else if (args.length == 2) {
+            if (args[0].equals("-i"))
+                runFile(args[1]);
         } else {
             runPrompt();
         }
