@@ -1,6 +1,4 @@
-package me.vasan.jimple;
-
-public class NativeFunction {
+class NativeFunction {
     String meth;
 
     public NativeFunction(String meth) {

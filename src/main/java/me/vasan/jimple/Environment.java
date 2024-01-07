@@ -2,7 +2,7 @@ package me.vasan.jimple;
 
 import java.util.Hashtable;
 
-class Environment {
+public class Environment {
     private Hashtable<String, Object> entries;
     Environment parent;
 
