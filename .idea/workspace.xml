@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="376290b1-22dc-4347-81b3-3e4b60b46d13" name="Changes" comment="WIP: Java class file compiler" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitRewordedCommitMessages">
+    <option name="commitMessagesMapping">
+      <RewordedCommitMessageMapping>
+        <option name="originalMessage" value="WIP: ClassfileWriter" />
+        <option name="rewordedMessage" value="WIP: Java class file compiler" />
+      </RewordedCommitMessageMapping>
+    </option>
+    <option name="currentCommit" value="1" />
+    <option name="onto" value="af51d65e898fd1de774926cafe396c6742f36d72" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$USER_HOME$/hacking/jdk/build/macosx-aarch64-server-release/jdk/modules/java.base/java/lang/classfile/ClassBuilder.class" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/hacking/jdk/build/macosx-aarch64-server-release/jdk/modules/java.base/java/lang/classfile/ClassFile.class" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/hacking/jdk/build/macosx-aarch64-server-release/jdk/modules/java.base/java/lang/classfile/FieldBuilder.class" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/hacking/jdk/build/macosx-aarch64-server-release/jdk/modules/java.base/java/lang/classfile/Label.class" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/hacking/jdk/build/macosx-aarch64-server-release/jdk/modules/java.base/java/lang/classfile/constantpool/ConstantPoolBuilder.class" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/hacking/jdk/build/macosx-aarch64-server-release/jdk/modules/java.base/java/lang/constant/ClassDesc.class" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/hacking/jdk/build/macosx-aarch64-server-release/jdk/modules/java.base/jdk/internal/classfile/impl/LabelImpl.class" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="2ZcIKKsDjabZtjMjGwo0a6eEBHr" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Application.jimple (compile file).executor&quot;: &quot;Run&quot;,
+    &quot;Application.jimple (console).executor&quot;: &quot;Run&quot;,
+    &quot;Application.jimple (interpret file).executor&quot;: &quot;Run&quot;,
+    &quot;Java Scratch.Scratch (1).executor&quot;: &quot;Run&quot;,
+    &quot;Java Scratch.Scratch.executor&quot;: &quot;Run&quot;,
+    &quot;Java Scratch.expt (1).executor&quot;: &quot;Run&quot;,
+    &quot;Java Scratch.expt (2).executor&quot;: &quot;Run&quot;,
+    &quot;Java Scratch.expt (3).executor&quot;: &quot;Run&quot;,
+    &quot;Maven.jimple [verify].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;scratch/java-classfile-compiler&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.21165818&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.build.tools.auto.reload&quot;: &quot;ALL&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;JAVA&quot;
+    ]
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="me.vasan.jimple.errors" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.jimple (console)">
+    <configuration name="jimple (compile file)" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="me.vasan.jimple.Jimple" />
+      <module name="jimple" />
+      <option name="PROGRAM_PARAMETERS" value="tests/expt.sim" />
+      <option name="VM_PARAMETERS" value="--enable-preview" />
+      <method v="2">
+        <option name="RunConfigurationTask" enabled="false" run_configuration_name="jimple [verify]" run_configuration_type="MavenRunConfiguration" />
+      </method>
+    </configuration>
+    <configuration name="jimple (console)" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="me.vasan.jimple.Jimple" />
+      <module name="jimple" />
+      <option name="VM_PARAMETERS" value="--enable-preview" />
+      <method v="2">
+        <option name="RunConfigurationTask" enabled="true" run_configuration_name="jimple [verify]" run_configuration_type="MavenRunConfiguration" />
+      </method>
+    </configuration>
+    <configuration name="jimple (interpret file)" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="me.vasan.jimple.Jimple" />
+      <module name="jimple" />
+      <option name="PROGRAM_PARAMETERS" value="-i tests/expt.sim" />
+      <option name="VM_PARAMETERS" value="--enable-preview" />
+      <method v="2">
+        <option name="RunConfigurationTask" enabled="false" run_configuration_name="jimple [verify]" run_configuration_type="MavenRunConfiguration" />
+      </method>
+    </configuration>
+    <configuration name="Scratch (1)" type="Java Scratch" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Scratch" />
+      <option name="SCRATCH_FILE_URL" value="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_2.java" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Scratch" type="Java Scratch" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Scratch" />
+      <option name="SCRATCH_FILE_URL" value="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_1.java" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="expt (1)" type="Java Scratch" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="expt.expt" />
+      <option name="SCRATCH_FILE_URL" value="file://$APPLICATION_CONFIG_DIR$/scratches/expt.java" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="expt.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="expt (2)" type="Java Scratch" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="expt" />
+      <option name="SCRATCH_FILE_URL" value="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.java" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="expt (3)" type="Java Scratch" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="expt" />
+      <option name="SCRATCH_FILE_URL" value="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_2.java" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="simple" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="simple" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="jimple [verify]" type="MavenRunConfiguration" factoryName="Maven" activateToolWindowBeforeRun="false" nameIsGenerated="true">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings">
+          <MavenRunnerSettings>
+            <option name="delegateBuildToMaven" value="false" />
+            <option name="environmentProperties">
+              <map />
+            </option>
+            <option name="jreName" value="#USE_PROJECT_JDK" />
+            <option name="mavenProperties">
+              <map />
+            </option>
+            <option name="passParentEnv" value="true" />
+            <option name="runMavenInBackground" value="true" />
+            <option name="skipTests" value="false" />
+            <option name="vmOptions" value="--enable-preview " />
+          </MavenRunnerSettings>
+        </option>
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="cmdOptions" />
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="verify" />
+              </list>
+            </option>
+            <option name="multimoduleDir" />
+            <option name="pomFileName" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="projectsCmdOptionValues">
+              <list />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Application.jimple (console)" />
+      <item itemvalue="Application.jimple (interpret file)" />
+      <item itemvalue="Application.jimple (compile file)" />
+      <item itemvalue="Java Scratch.Scratch" />
+      <item itemvalue="Java Scratch.Scratch (1)" />
+      <item itemvalue="Java Scratch.expt (2)" />
+      <item itemvalue="Java Scratch.expt (3)" />
+      <item itemvalue="Java Scratch.expt (1)" />
+      <item itemvalue="Maven.jimple [verify]" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Java Scratch.expt (1)" />
+        <item itemvalue="Java Scratch.Scratch (1)" />
+        <item itemvalue="Java Scratch.expt (3)" />
+        <item itemvalue="Java Scratch.Scratch" />
+        <item itemvalue="Java Scratch.expt (2)" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="376290b1-22dc-4347-81b3-3e4b60b46d13" name="Changes" comment="" />
+      <created>1702714875707</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1702714875707</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Use maven because gradle doesn't work with jdk23">
+      <option name="closed" value="true" />
+      <created>1702717030183</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1702717030183</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Classfile template">
+      <option name="closed" value="true" />
+      <created>1702878032754</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1702878032754</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Classfile template">
+      <option name="closed" value="true" />
+      <created>1702878084314</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1702878084314</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Gut this garbage.">
+      <option name="closed" value="true" />
+      <created>1704357023368</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1704357023368</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Gut this garbage, pt. 2">
+      <option name="closed" value="true" />
+      <created>1704605976843</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1704605976844</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Gut this garbage, pt. 33">
+      <option name="closed" value="true" />
+      <created>1704627842578</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1704627842578</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Add return_0 at the end or the real jvm will cry">
+      <option name="closed" value="true" />
+      <created>1704631371072</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1704631371072</updated>
+    </task>
+    <task id="LOCAL-00008" summary="WIP: Java class file compiler">
+      <option name="closed" value="true" />
+      <created>1704736355560</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1704736355561</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Use maven because gradle doesn't work with jdk23" />
+    <MESSAGE value="Classfile template" />
+    <MESSAGE value="Gut this garbage." />
+    <MESSAGE value="Gut this garbage, pt. 2" />
+    <MESSAGE value="Gut this garbage, pt. 33" />
+    <MESSAGE value="Add return_0 at the end or the real jvm will cry" />
+    <MESSAGE value="Thillumullu" />
+    <MESSAGE value="WIP: Java class file compiler" />
+    <option name="LAST_COMMIT_MESSAGE" value="WIP: Java class file compiler" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/vasan/jimple/Parser.java</url>
+          <line>384</line>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="me.vasan.jimple.SyntaxError" package="me.vasan.jimple" />
+          <option name="timeStamp" value="15" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
