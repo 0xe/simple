@@ -7,5 +7,5 @@ let add = function(a, b) {
 
 print(add(3, 4));
 
-print(a != 3);
-print(b != 4);
+print(a == 32);
+print(b == 23);
