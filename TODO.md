@@ -1,0 +1,3 @@
+- Objects
+- Standard library
+- Bytecode compiler & VM
