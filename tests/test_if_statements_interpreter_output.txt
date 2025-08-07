@@ -1,0 +1,5 @@
+x is greater than 5
+x is not less than 5
+x is positive and greater than 5
+Both conditions are true
+nil

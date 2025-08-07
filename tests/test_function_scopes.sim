@@ -1,0 +1,31 @@
+// Test function scoping and closures
+let global = "global variable";
+
+let outerFunc = function() {
+    let outer = "outer function variable";
+    
+    let innerFunc = function() {
+        print("From inner: ", global);
+        print("From inner: ", outer);
+        return "inner result";
+    };
+    
+    return innerFunc();
+};
+
+let result = outerFunc();
+print("Result: ", result);
+
+// Test function parameters vs local variables
+let test = function(param) {
+    let local = "local var";
+    param = param + " modified";
+    print("Parameter: ", param);
+    print("Local: ", local);
+    return param;
+};
+
+let original = "original value";
+let modified = test(original);
+print("Original unchanged: ", original);
+print("Modified: ", modified);

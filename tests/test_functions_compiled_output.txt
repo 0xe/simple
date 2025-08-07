@@ -1,0 +1,2 @@
+Error: LinkageError occurred while loading main class test_functions
+	java.lang.ClassFormatError: Invalid index 8 in LocalVariableTable in class file test_functions

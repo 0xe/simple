@@ -1,0 +1,33 @@
+// Test objects with function properties (methods)
+let calculator = {
+    value: 0,
+    add: function(x) {
+        return calculator.value + x;
+    },
+    multiply: function(x) {
+        return calculator.value * x;
+    }
+};
+
+calculator.value = 10;
+print("Initial value: ", calculator.value);
+print("Add 5: ", calculator.add(5));
+print("Multiply by 3: ", calculator.multiply(3));
+
+// Test object with complex methods
+let counter = {
+    count: 0,
+    increment: function() {
+        counter.count = counter.count + 1;
+        return counter.count;
+    },
+    reset: function() {
+        counter.count = 0;
+        return counter.count;
+    }
+};
+
+print("Count: ", counter.count);
+print("Increment: ", counter.increment());
+print("Increment: ", counter.increment());
+print("Reset: ", counter.reset());
