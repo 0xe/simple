@@ -1,0 +1,10 @@
+10 == 5: false
+10 != 5: true
+10 > 5: true
+10 >= 5: true
+10 < 5: false
+10 <= 5: false
+true && false: false
+true || false: true
+!true: false
+nil

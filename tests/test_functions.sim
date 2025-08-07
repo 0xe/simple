@@ -1,0 +1,38 @@
+// Test function definitions and calls
+let add = function(a, b) {
+    return a + b;
+};
+
+let multiply = function(x, y) {
+    return x * y;
+};
+
+// Test simple function calls
+let sum = add(5, 3);
+let product = multiply(4, 6);
+
+print("5 + 3 = ", sum);
+print("4 * 6 = ", product);
+
+// Test function with conditional logic
+let max = function(a, b) {
+    if (a > b) {
+        return a;
+    } else {
+        return b;
+    }
+};
+
+print("max(10, 7) = ", max(10, 7));
+print("max(3, 8) = ", max(3, 8));
+
+// Test recursive function
+let factorial = function(n) {
+    if (n <= 1) {
+        return 1;
+    } else {
+        return n * factorial(n - 1);
+    }
+};
+
+print("factorial(5) = ", factorial(5));

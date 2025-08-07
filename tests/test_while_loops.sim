@@ -1,0 +1,21 @@
+// Test while loops
+let count = 0;
+
+print("Counting to 3:");
+while (count < 3) {
+    print("Count: ", count);
+    count = count + 1;
+}
+
+// Test while with more complex condition
+let x = 10;
+let y = 1;
+
+print("Decreasing x while y increases:");
+while (x > y) {
+    print("x: ", x, ", y: ", y);
+    x = x - 1;
+    y = y + 1;
+}
+
+print("Final values - x: ", x, ", y: ", y);

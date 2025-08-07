@@ -1,0 +1,173 @@
+java.lang.IllegalArgumentException: Operand stack underflow at bytecode offset 26 of method main(String[])
+  - max stack: 65535
+    max locals: 65535
+    attributes: []
+    //stack map frame @0: {locals: ['[Ljava/lang/String;'], stack: []}
+    0: {opcode: NEW, type: NativeFunction}
+    3: {opcode: DUP}
+    4: {opcode: LDC, constant value: print}
+    6: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    9: {opcode: ICONST_2, constant value: 2}
+    10: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    13: {opcode: DUP}
+    14: {opcode: ICONST_0, constant value: 0}
+    15: {opcode: LDC, constant value: Name: }
+    17: {opcode: AASTORE}
+    18: {opcode: DUP}
+    19: {opcode: ICONST_1, constant value: 1}
+    20: {opcode: LDC, constant value: name}
+    22: {opcode: INVOKEVIRTUAL, owner: me/vasan/jimple/SimpleObject, method name: get, method type: (Ljava/lang/String;)Ljava/lang/Object;}
+    25: {opcode: AASTORE}
+    26: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    29: {opcode: POP}
+    30: {opcode: NEW, type: NativeFunction}
+    33: {opcode: DUP}
+    34: {opcode: LDC, constant value: print}
+    36: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    39: {opcode: ICONST_2, constant value: 2}
+    40: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    43: {opcode: DUP}
+    44: {opcode: ICONST_0, constant value: 0}
+    45: {opcode: LDC, constant value: Age: }
+    47: {opcode: AASTORE}
+    48: {opcode: DUP}
+    49: {opcode: ICONST_1, constant value: 1}
+    50: {opcode: LDC, constant value: age}
+    52: {opcode: INVOKEVIRTUAL, owner: me/vasan/jimple/SimpleObject, method name: get, method type: (Ljava/lang/String;)Ljava/lang/Object;}
+    55: {opcode: AASTORE}
+    56: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    59: {opcode: POP}
+    60: {opcode: NEW, type: NativeFunction}
+    63: {opcode: DUP}
+    64: {opcode: LDC, constant value: print}
+    66: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    69: {opcode: ICONST_2, constant value: 2}
+    70: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    73: {opcode: DUP}
+    74: {opcode: ICONST_0, constant value: 0}
+    75: {opcode: LDC, constant value: Number property: }
+    77: {opcode: AASTORE}
+    78: {opcode: DUP}
+    79: {opcode: ICONST_1, constant value: 1}
+    80: {opcode: LDC, constant value: number}
+    82: {opcode: INVOKEVIRTUAL, owner: me/vasan/jimple/SimpleObject, method name: get, method type: (Ljava/lang/String;)Ljava/lang/Object;}
+    85: {opcode: AASTORE}
+    86: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    89: {opcode: POP}
+    90: {opcode: NEW, type: NativeFunction}
+    93: {opcode: DUP}
+    94: {opcode: LDC, constant value: print}
+    96: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    99: {opcode: ICONST_2, constant value: 2}
+    100: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    103: {opcode: DUP}
+    104: {opcode: ICONST_0, constant value: 0}
+    105: {opcode: LDC, constant value: String property: }
+    107: {opcode: AASTORE}
+    108: {opcode: DUP}
+    109: {opcode: ICONST_1, constant value: 1}
+    110: {opcode: LDC, constant value: string}
+    112: {opcode: INVOKEVIRTUAL, owner: me/vasan/jimple/SimpleObject, method name: get, method type: (Ljava/lang/String;)Ljava/lang/Object;}
+    115: {opcode: AASTORE}
+    116: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    119: {opcode: POP}
+    120: {opcode: NEW, type: NativeFunction}
+    123: {opcode: DUP}
+    124: {opcode: LDC, constant value: print}
+    126: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    129: {opcode: ICONST_2, constant value: 2}
+    130: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    133: {opcode: DUP}
+    134: {opcode: ICONST_0, constant value: 0}
+    135: {opcode: LDC, constant value: Boolean property: }
+    137: {opcode: AASTORE}
+    138: {opcode: DUP}
+    139: {opcode: ICONST_1, constant value: 1}
+    140: {opcode: LDC, constant value: boolean}
+    142: {opcode: INVOKEVIRTUAL, owner: me/vasan/jimple/SimpleObject, method name: get, method type: (Ljava/lang/String;)Ljava/lang/Object;}
+    145: {opcode: AASTORE}
+    146: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    149: {opcode: POP}
+    150: {opcode: NEW, type: NativeFunction}
+    153: {opcode: DUP}
+    154: {opcode: LDC, constant value: print}
+    156: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    159: {opcode: ICONST_2, constant value: 2}
+    160: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    163: {opcode: DUP}
+    164: {opcode: ICONST_0, constant value: 0}
+    165: {opcode: LDC, constant value: Company: }
+    167: {opcode: AASTORE}
+    168: {opcode: DUP}
+    169: {opcode: ICONST_1, constant value: 1}
+    170: {opcode: LDC, constant value: name}
+    172: {opcode: INVOKEVIRTUAL, owner: me/vasan/jimple/SimpleObject, method name: get, method type: (Ljava/lang/String;)Ljava/lang/Object;}
+    175: {opcode: AASTORE}
+    176: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    179: {opcode: POP}
+    180: {opcode: NEW, type: NativeFunction}
+    183: {opcode: DUP}
+    184: {opcode: LDC, constant value: print}
+    186: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    189: {opcode: ICONST_2, constant value: 2}
+    190: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    193: {opcode: DUP}
+    194: {opcode: ICONST_0, constant value: 0}
+    195: {opcode: LDC, constant value: CEO: }
+    197: {opcode: AASTORE}
+    198: {opcode: DUP}
+    199: {opcode: ICONST_1, constant value: 1}
+    200: {opcode: LDC, constant value: ceo}
+    202: {opcode: INVOKEVIRTUAL, owner: me/vasan/jimple/SimpleObject, method name: get, method type: (Ljava/lang/String;)Ljava/lang/Object;}
+    205: {opcode: LDC, constant value: name}
+    207: {opcode: INVOKEVIRTUAL, owner: me/vasan/jimple/SimpleObject, method name: get, method type: (Ljava/lang/String;)Ljava/lang/Object;}
+    210: {opcode: AASTORE}
+    211: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    214: {opcode: POP}
+    215: {opcode: NEW, type: NativeFunction}
+    218: {opcode: DUP}
+    219: {opcode: LDC, constant value: print}
+    221: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    224: {opcode: ICONST_2, constant value: 2}
+    225: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    228: {opcode: DUP}
+    229: {opcode: ICONST_0, constant value: 0}
+    230: {opcode: LDC, constant value: CEO Age: }
+    232: {opcode: AASTORE}
+    233: {opcode: DUP}
+    234: {opcode: ICONST_1, constant value: 1}
+    235: {opcode: LDC, constant value: ceo}
+    237: {opcode: INVOKEVIRTUAL, owner: me/vasan/jimple/SimpleObject, method name: get, method type: (Ljava/lang/String;)Ljava/lang/Object;}
+    240: {opcode: LDC, constant value: age}
+    242: {opcode: INVOKEVIRTUAL, owner: me/vasan/jimple/SimpleObject, method name: get, method type: (Ljava/lang/String;)Ljava/lang/Object;}
+    245: {opcode: AASTORE}
+    246: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    249: {opcode: POP}
+    250: {opcode: RETURN}
+
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.generatorError(StackMapGenerator.java:850)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.generatorError(StackMapGenerator.java:835)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator$Frame.decStack(StackMapGenerator.java:1007)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.processInvokeInstructions(StackMapGenerator.java:813)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.processBlock(StackMapGenerator.java:658)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.processMethod(StackMapGenerator.java:454)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.generate(StackMapGenerator.java:303)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.<init>(StackMapGenerator.java:246)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.of(StackMapGenerator.java:157)
+	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder$4.generateStackMaps(DirectCodeBuilder.java:341)
+	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder$4.tryGenerateStackMaps(DirectCodeBuilder.java:349)
+	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder$4.writeBody(DirectCodeBuilder.java:384)
+	at java.base/jdk.internal.classfile.impl.UnboundAttribute$AdHocAttribute.writeTo(UnboundAttribute.java:1099)
+	at java.base/jdk.internal.classfile.impl.Util.writeAttribute(Util.java:230)
+	at java.base/jdk.internal.classfile.impl.AttributeHolder.writeTo(AttributeHolder.java:71)
+	at java.base/jdk.internal.classfile.impl.DirectMethodBuilder.writeTo(DirectMethodBuilder.java:146)
+	at java.base/jdk.internal.classfile.impl.Util.writeList(Util.java:247)
+	at java.base/jdk.internal.classfile.impl.DirectClassBuilder.build(DirectClassBuilder.java:198)
+	at java.base/jdk.internal.classfile.impl.ClassFileImpl.build(ClassFileImpl.java:145)
+	at java.base/java.lang.classfile.ClassFile.build(ClassFile.java:558)
+	at java.base/java.lang.classfile.ClassFile.buildTo(ClassFile.java:587)
+	at me.vasan.jimple.Compiler.writeClass(Compiler.java:538)
+	at me.vasan.jimple.Compiler.compile(Compiler.java:62)
+	at me.vasan.jimple.Jimple.compile(Jimple.java:38)
+	at me.vasan.jimple.Jimple.compileFile(Jimple.java:59)
+	at me.vasan.jimple.Jimple.main(Jimple.java:88)

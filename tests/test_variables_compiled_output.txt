@@ -1,0 +1,27 @@
+Error: Unable to initialize main class test_variables
+Caused by: java.lang.VerifyError: Bad local variable type
+Exception Details:
+  Location:
+    test_variables.main([Ljava/lang/String;)V @93: dload
+  Reason:
+    Type 'java/lang/String' (current frame, locals[5]) is not assignable to double
+  Current Frame:
+    bci: @93
+    flags: { }
+    locals: { '[Ljava/lang/String;', double, double_2nd, double, double_2nd, 'java/lang/String', integer }
+    stack: { 'NativeFunction', '[Ljava/lang/Object;', '[Ljava/lang/Object;', integer }
+  Bytecode:
+    0000000: 1400 0748 1400 0a4a 120f 3a05 0436 06bb
+    0000010: 0013 5912 15b7 0019 05bd 001b 5903 121d
+    0000020: 5359 0427 b800 2353 b600 2757 bb00 1359
+    0000030: 1215 b700 1905 bd00 1b59 0312 2953 5904
+    0000040: 29b8 0023 53b6 0027 57bb 0013 5912 15b7
+    0000050: 0019 05bd 001b 5903 122b 5359 0418 05b8
+    0000060: 0023 53b6 0027 57bb 0013 5912 15b7 0019
+    0000070: 05bd 001b 5903 122d 5359 0418 06b8 0023
+    0000080: 53b6 0027 5727 1400 2e63 5c48 5703 5936
+    0000090: 0657 bb00 1359 1215 b700 1905 bd00 1b59
+    00000a0: 0312 3153 5904 27b8 0023 53b6 0027 57bb
+    00000b0: 0013 5912 15b7 0019 05bd 001b 5903 1233
+    00000c0: 5359 0418 06b8 0023 53b6 0027 57b1     
+

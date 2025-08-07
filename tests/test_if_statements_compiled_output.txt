@@ -1,0 +1,4 @@
+x is greater than 5Exception in thread "main" java.lang.NullPointerException: Cannot invoke "Object.toString()" because "<local5>" is null
+	at NativeFunction.print(NativeFunction.java:10)
+	at NativeFunction.call(NativeFunction.java:21)
+	at test_if_statements.main(Unknown Source)

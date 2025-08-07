@@ -1,0 +1,33 @@
+Error: Unable to initialize main class test_comparisons
+Caused by: java.lang.VerifyError: Bad type on operand stack
+Exception Details:
+  Location:
+    test_comparisons.main([Ljava/lang/String;)V @36: aastore
+  Reason:
+    Type integer (current frame, stack[4]) is not assignable to reference type
+  Current Frame:
+    bci: @36
+    flags: { }
+    locals: { '[Ljava/lang/String;', double, double_2nd, double, double_2nd }
+    stack: { 'NativeFunction', '[Ljava/lang/Object;', '[Ljava/lang/Object;', integer, integer, integer, 'java/lang/Boolean' }
+  Bytecode:
+    0000000: 1400 0748 1400 0a4a bb00 0d59 120f b700
+    0000010: 1305 bd00 1559 0312 1753 5904 2729 9704
+    0000020: 03b8 001d 53b6 0021 57bb 000d 5912 0fb7
+    0000030: 0013 05bd 0015 5903 1223 5359 0427 2997
+    0000040: b800 1d53 b600 2157 bb00 0d59 120f b700
+    0000050: 1305 bd00 1559 0312 2553 5904 2729 97b8
+    0000060: 001d 53b6 0021 57bb 000d 5912 0fb7 0013
+    0000070: 05bd 0015 5903 1227 5359 0427 2997 b800
+    0000080: 1d53 b600 2157 bb00 0d59 120f b700 1305
+    0000090: bd00 1559 0312 2953 5904 2729 97b8 001d
+    00000a0: 53b6 0021 57bb 000d 5912 0fb7 0013 05bd
+    00000b0: 0015 5903 122b 5359 0427 2997 b800 1d53
+    00000c0: b600 2157 0436 0503 3606 bb00 0d59 120f
+    00000d0: b700 1305 bd00 1559 0312 3053 5904 1805
+    00000e0: 1806 b800 1d53 b600 2157 bb00 0d59 120f
+    00000f0: b700 1305 bd00 1559 0312 3253 5904 1805
+    0000100: 1806 b800 1d53 b600 2157 bb00 0d59 120f
+    0000110: b700 1305 bd00 1559 0312 3453 5904 1805
+    0000120: b800 1d53 b600 2157 b1                 
+

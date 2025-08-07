@@ -1,0 +1,22 @@
+Error: Unable to initialize main class test_blocks
+Caused by: java.lang.VerifyError: get long/double overflows locals
+Exception Details:
+  Location:
+    test_blocks.main([Ljava/lang/String;)V @23: dload_1
+  Reason:
+    Local index 1 is invalid
+  Bytecode:
+    0000000: 1208 4cbb 000a 5912 0cb7 0010 05bd 0012
+    0000010: 5903 1214 5359 0427 b800 1a53 b600 1e57
+    0000020: 1221 4d12 234e bb00 0a59 120c b700 1005
+    0000030: bd00 1259 0312 2553 5904 29b8 001a 53b6
+    0000040: 001e 57bb 000a 5912 0cb7 0010 05bd 0012
+    0000050: 5903 1227 5359 0428 b800 1a53 b600 1e57
+    0000060: bb00 0a59 120c b700 1005 bd00 1259 0312
+    0000070: 2953 5904 27b8 001a 53b6 001e 5712 2c3a
+    0000080: 0412 2f3a 05bb 000a 5912 0cb7 0010 05bd
+    0000090: 0012 5903 1231 5359 0418 04b8 001a 53b6
+    00000a0: 001e 57bb 000a 5912 0cb7 0010 05bd 0012
+    00000b0: 5903 1233 5359 0418 05b8 001a 53b6 001e
+    00000c0: 57b1                                   
+

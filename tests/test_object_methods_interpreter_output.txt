@@ -1,0 +1,8 @@
+me.vasan.jimple.SyntaxError
+	at me.vasan.jimple.Parser.parse_expr_stmt(Parser.java:231)
+	at me.vasan.jimple.Parser.parse_stmt(Parser.java:149)
+	at me.vasan.jimple.Parser.parse_decl(Parser.java:118)
+	at me.vasan.jimple.Parser.parse(Parser.java:105)
+	at me.vasan.jimple.Jimple.run(Jimple.java:49)
+	at me.vasan.jimple.Jimple.runFile(Jimple.java:65)
+	at me.vasan.jimple.Jimple.main(Jimple.java:91)

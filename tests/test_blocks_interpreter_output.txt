@@ -1,0 +1,7 @@
+Before block: outer variable
+In block - outer: shadowed outer
+In block - inner: inner variable
+After block: outer variable
+Nested block - level1: level 1
+Nested block - level2: level 2
+nil
