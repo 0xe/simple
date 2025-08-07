@@ -12,7 +12,7 @@ enum StmtType {
 };
 
 enum ExprType {
-    ASSIGN_EXPR, BINARY_EXPR, UNARY, FUNCTION, CALL, PRIMARY
+    ASSIGN_EXPR, BINARY_EXPR, UNARY, FUNCTION, CALL, PRIMARY, OBJECT, PROPERTY_ACCESS
 };
 
 enum PrimaryType {ID, NUM, STR, B, NIL};
@@ -242,6 +242,8 @@ class Expr extends Node {
     FunctionExpr fe;
     CallExpr ce;
     PrimaryExpr pe;
+    ObjectExpr oe;
+    PropertyAccessExpr pae;
 
     ExprType type;
 
@@ -271,6 +273,14 @@ class Expr extends Node {
 
     Expr(PrimaryExpr e) {
         this.pe = e; this.type = ExprType.PRIMARY;
+    }
+
+    Expr(ObjectExpr e) {
+        this.oe = e; this.type = ExprType.OBJECT;
+    }
+
+    Expr(PropertyAccessExpr e) {
+        this.pae = e; this.type = ExprType.PROPERTY_ACCESS;
     }
 }
 
@@ -354,5 +364,45 @@ class PrimaryExpr {
             default: child = ""; // XXX?
         }
         return String.format("<Primary> %s, child: %s", type, child);
+    }
+}
+
+class ObjectExpr {
+    ArrayList<String> keys;
+    ArrayList<Expr> values;
+
+    ObjectExpr() {
+        this.keys = new ArrayList<>();
+        this.values = new ArrayList<>();
+    }
+
+    ObjectExpr(ArrayList<String> keys, ArrayList<Expr> values) {
+        this.keys = keys;
+        this.values = values;
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<Object> {");
+        for (int i = 0; i < keys.size(); i++) {
+            sb.append(keys.get(i)).append(": ").append(values.get(i));
+            if (i < keys.size() - 1) sb.append(", ");
+        }
+        sb.append("}");
+        return sb.toString();
+    }
+}
+
+class PropertyAccessExpr {
+    Expr object;
+    String property;
+
+    PropertyAccessExpr(Expr object, String property) {
+        this.object = object;
+        this.property = property;
+    }
+
+    public String toString() {
+        return String.format("<PropertyAccess> %s.%s", object.toString(), property);
     }
 }

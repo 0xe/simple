@@ -1,8 +1,4 @@
 ## Grammar ##
-
-    // TODO: add structures/cons cells
-    // TODO: add arrays/vectors
-
     // declarations
     pgm  => decl* EOF;
     decl => var | stmt;
@@ -40,5 +36,6 @@
     factor => unary ( ( "/" | "*" ) unary )*;
     unary => ("!" | "-") unary | function;
     function => "function" "(" (ID ("," ID)*)? ")" block | call;
-    call   => primary ("(" (expr ("," expr)* )? ")")*;
-    primary => "true" | "false" | "nil" | NUMBER | STRING | ID | "(" expr ")";
+    call   => primary ("(" (expr ("," expr)* )? ")" | "." ID)*;
+    primary => "true" | "false" | "nil" | NUMBER | STRING | ID | "(" expr ")" | object;
+    object => "{" (ID ":" expr ("," ID ":" expr)*)? "}";

@@ -358,22 +358,36 @@ public class Parser {
     }
 
     Expr call() throws SyntaxError, EofReached {
-        Token t = peek();
-        if (t.type == TT.IDENTIFIER) {
-            Id id = new Id(t.lexeme, t.line, t.charPos);
-            ArrayList<Expr> args = new ArrayList<Expr>();
-            advance();
-            if (!consume(LEFT_PAREN)) { rollback(); return primary(); }
-            while (peek().type != RIGHT_PAREN) {
-                args.add(parse_expr());
-                if (peek().type == COMMA)
-                    consume(COMMA);
+        Expr expr = primary();
+        
+        while (true) {
+            if (match(LEFT_PAREN)) {
+                ArrayList<Expr> args = new ArrayList<Expr>();
+                if (peek().type != RIGHT_PAREN) {
+                    do {
+                        args.add(parse_expr());
+                    } while (match(COMMA));
+                }
+                consume(RIGHT_PAREN);
+                
+                if (expr.type == ExprType.PRIMARY && expr.pe.type == PrimaryType.ID) {
+                    expr = new Expr(new CallExpr(expr.pe.id, args));
+                } else {
+                    throw new SyntaxError("Can only call functions");
+                }
+            } else if (match(DOT)) {
+                Token propertyToken = peek();
+                if (propertyToken.type != IDENTIFIER) {
+                    throw new SyntaxError("Expected property name after '.'");
+                }
+                advance();
+                expr = new Expr(new PropertyAccessExpr(expr, propertyToken.lexeme));
+            } else {
+                break;
             }
-            consume(RIGHT_PAREN);
-            return new Expr(new CallExpr(id, args));
-        } else {
-            return primary();
         }
+        
+        return expr;
     }
 
     Expr primary() throws SyntaxError, EofReached {
@@ -381,8 +395,36 @@ public class Parser {
         if (t.isPrimary()) {
             advance();
             return new Expr(new PrimaryExpr(t));
+        } else if (t.type == LEFT_BRACE) {
+            return parseObject();
         } else {
             throw new SyntaxError("primary");
         }
+    }
+
+    Expr parseObject() throws SyntaxError, EofReached {
+        consume(LEFT_BRACE);
+        
+        ArrayList<String> keys = new ArrayList<>();
+        ArrayList<Expr> values = new ArrayList<>();
+        
+        if (peek().type != RIGHT_BRACE) {
+            do {
+                Token keyToken = peek();
+                if (keyToken.type != IDENTIFIER) {
+                    throw new SyntaxError("Expected property name");
+                }
+                advance();
+                
+                consume(COLON);
+                
+                keys.add(keyToken.lexeme);
+                values.add(parse_expr());
+                
+            } while (match(COMMA));
+        }
+        
+        consume(RIGHT_BRACE);
+        return new Expr(new ObjectExpr(keys, values));
     }
 }

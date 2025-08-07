@@ -173,6 +173,21 @@ public class Interpreter {
                 Object val = interpret(e.a.e, env);
                 env.update(e.a.id.name, val);
                 return val;
+            case OBJECT:
+                SimpleObject obj = new SimpleObject();
+                for (int i = 0; i < e.oe.keys.size(); i++) {
+                    String key = e.oe.keys.get(i);
+                    Object value = interpret(e.oe.values.get(i), env);
+                    obj.set(key, value);
+                }
+                return obj;
+            case PROPERTY_ACCESS:
+                Object object = interpret(e.pae.object, env);
+                if (object instanceof SimpleObject) {
+                    return ((SimpleObject) object).get(e.pae.property);
+                } else {
+                    throw new RuntimeError("Cannot access property '" + e.pae.property + "' on non-object");
+                }
             default:
                 return null;
         }

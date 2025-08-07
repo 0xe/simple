@@ -1,0 +1,3 @@
+let obj = {name: "test", value: 42};
+print(obj.name);
+print(obj.value);

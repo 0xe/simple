@@ -23,6 +23,15 @@ expt: build
 scoping: build 
 	pushd jimple; CLASSPATH=. java me/vasan/jimple/Jimple ${PWD}/tests/scoping.sim; popd
 
+objects: build
+	pushd jimple; CLASSPATH=. java me/vasan/jimple/Jimple ${PWD}/tests/object_basic.sim; popd
+
+objects-nested: build
+	pushd jimple; CLASSPATH=. java me/vasan/jimple/Jimple ${PWD}/tests/object_nested.sim; popd
+
+objects-complex: build
+	pushd jimple; CLASSPATH=. java me/vasan/jimple/Jimple ${PWD}/tests/object_complex.sim; popd
+
 clean:
 	rm -rf target/*
 	rm -rf jimple/me/vasan/jimple/*.class

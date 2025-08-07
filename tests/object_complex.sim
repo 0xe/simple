@@ -1,0 +1,15 @@
+let person = {
+    name: "Bob",
+    age: 25,
+    isAdult: true
+};
+
+let data = {
+    users: person,
+    count: 1
+};
+
+print(data.users.name);
+print(data.users.age);
+print(data.users.isAdult);
+print(data.count);

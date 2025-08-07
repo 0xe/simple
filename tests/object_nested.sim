@@ -1,0 +1,11 @@
+let person = {
+    name: "Alice", 
+    age: 30,
+    address: {
+        street: "123 Main St",
+        city: "Anytown"
+    }
+};
+
+print(person.name);
+print(person.address.street);
