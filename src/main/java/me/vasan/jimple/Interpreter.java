@@ -211,12 +211,12 @@ public class Interpreter {
                 SimpleObject obj = new SimpleObject();
                 for (int i = 0; i < e.oe.keys.size(); i++) {
                     String key = e.oe.keys.get(i);
-                    Object value = interpret(e.oe.values.get(i), env);
+                    Object value = interpretExpr(e.oe.values.get(i), env);
                     obj.set(key, value);
                 }
                 return obj;
             case PROPERTY_ACCESS:
-                Object object = interpret(e.pae.object, env);
+                Object object = interpretExpr(e.pae.object, env);
                 if (object instanceof SimpleObject) {
                     return ((SimpleObject) object).get(e.pae.property);
                 } else {
