@@ -6,8 +6,13 @@ class NativeFunction {
     }
 
     public Object print(Object... args) {
-        for (Object a: args)
-            System.out.print(a.toString());
+        for (Object a: args) {
+            if (a == null) {
+                System.out.print("null");
+            } else {
+                System.out.print(a.toString());
+            }
+        }
         System.out.println();
         return null;
     }
@@ -16,13 +21,13 @@ class NativeFunction {
         return System.currentTimeMillis();
     }
 
-    public Object call(Object... args) throws RuntimeError {
+    public Object call(Object... args) throws Exception {
         if (meth.equals("print"))
             return print(args);
         else if (meth.equals("clock"))
             return clock(args);
         else {
-            throw new RuntimeError("NativeFunction#call()");
+            throw new Exception("NativeFunction#call()");
         }
     }
 }

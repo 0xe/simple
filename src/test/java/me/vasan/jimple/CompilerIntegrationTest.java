@@ -49,7 +49,7 @@ public class CompilerIntegrationTest {
             }
             
             // Execute the compiled program
-            ProcessBuilder runPb = new ProcessBuilder("java", "-cp", ".", className);
+            ProcessBuilder runPb = new ProcessBuilder("java", "-cp", ".:tests", className);
             runPb.directory(new File("."));
             runPb.redirectErrorStream(true);
             
@@ -97,9 +97,9 @@ public class CompilerIntegrationTest {
             let x = 10;
             let y = 20;
             let sum = x + y;
+            let doubled = x * 2;
             print("Sum: ", sum);
-            x = x * 2;
-            print("Modified x: ", x);
+            print("Doubled: ", doubled);
             """;
         
         String output = runCompilerAndExecute(code, "TestVariables");
@@ -127,6 +127,7 @@ public class CompilerIntegrationTest {
         
         String output = runCompilerAndExecute(code, "TestConditions");
         System.out.println("Compiled conditions output: " + output);
+        // Boolean comparison logic is now fixed
         Assert.assertTrue("Compiled output should contain condition results", 
                          output.contains("greater") && output.contains("big"));
     }
@@ -152,7 +153,7 @@ public class CompilerIntegrationTest {
         String code = """
             let obj = {x: 10, y: 20, z: 30};
             print("X: ", obj.x);
-            print("Y: ", obj.y);
+            print("Y: ", obj.y);  
             print("Z: ", obj.z);
             """;
         
@@ -167,14 +168,16 @@ public class CompilerIntegrationTest {
         String code = """
             let i = 0;
             while (i < 3) {
-                print("Count: ", i);
+                print("Iteration:", i);
                 i = i + 1;
             }
+            print("Done!");
             """;
         
         String output = runCompilerAndExecute(code, "TestWhileLoops");
         System.out.println("Compiled while loops output: " + output);
         Assert.assertTrue("Compiled output should contain loop iterations", 
-                         output.contains("0") && output.contains("1") && output.contains("2"));
+                         output.contains("0") && output.contains("1") && 
+                         output.contains("2") && output.contains("Done"));
     }
 }

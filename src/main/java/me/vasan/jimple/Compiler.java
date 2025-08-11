@@ -42,7 +42,7 @@ public class Compiler {
     record MethodInfo(int counter, String sig) {
     };
 
-    record VarInfo(int slot) {
+    record VarInfo(int slot, TypeInfo type) {
     };
 
     public Compiler(String name) {
@@ -107,8 +107,12 @@ public class Compiler {
                 }
             }
             case CALL -> {
-                // Function calls return objects by default (need better inference)
-                return new TypeInfo(TypeKind.REFERENCE, ClassDesc.of("java.lang", "Object"));
+                // Check if it's a special function like print
+                if (e.ce.id.name.equals("print") || e.ce.id.name.equals("clock")) {
+                    return new TypeInfo(TypeKind.REFERENCE, ClassDesc.of("java.lang", "Object"));
+                }
+                // User-defined functions return doubles by default
+                return new TypeInfo(TypeKind.DOUBLE, ClassDesc.of("double"));
             }
             case FUNCTION -> {
                 return new TypeInfo(TypeKind.REFERENCE,
@@ -119,8 +123,11 @@ public class Compiler {
                 switch (p.type) {
                     case ID -> {
                         // Look up variable type from table
-                        // For now, assume double
-                        return new TypeInfo(TypeKind.DOUBLE, ClassDesc.of("double"));
+                        VarInfo varInfo = varTable.get(p.id.name);
+                        if (varInfo != null) {
+                            return varInfo.type;
+                        }
+                        return new TypeInfo(TypeKind.DOUBLE, ClassDesc.of("double")); // default
                     }
                     case NUM -> {
                         return new TypeInfo(TypeKind.DOUBLE, ClassDesc.of("double"));
@@ -173,7 +180,7 @@ public class Compiler {
                     default -> cb.astore(slot);
                 }
                 
-                varTable.put(v.id.name, new VarInfo(slot));
+                varTable.put(v.id.name, new VarInfo(slot, type));
             }
         } else { // special behaviour for "print" and "clock"?
             if (ce.id.name.equals("print")) {
@@ -183,7 +190,7 @@ public class Compiler {
                         .invokespecial(ClassDesc.of("NativeFunction"),
                                 "<init>",
                                 MethodTypeDesc.ofDescriptor("(Ljava/lang/String;)V"))
-                        .iconst_2() // TODO: pick the iconst based on ce.a.length()
+                        .ldc(ce.a.size()) // Use actual argument count
                         .anewarray(ClassDesc.of("java.lang.Object"));
                 for (var ai : ce.a) {
                     cb.dup();
@@ -248,8 +255,7 @@ public class Compiler {
                 VarInfo varInfo = varTable.get(e.a.id.name);
                 if (varInfo != null) {
                     // Duplicate value on stack for assignment expression result
-                    TypeInfo rhsType = findExprType(e.a.e);
-                    switch (rhsType.t) {
+                    switch (varInfo.type.t) {
                         case DOUBLE -> {
                             cb.dup2(); // double takes 2 stack slots
                             cb.dstore(varInfo.slot);
@@ -283,21 +289,79 @@ public class Compiler {
                     case MUL -> cb.dmul();
                     case DIV -> cb.ddiv();
                     case EQ -> {
-                        // Compare doubles: dcmpl, ifeq
+                        // Compare doubles: dcmpl returns -1, 0, or 1
                         cb.dcmpl();
-                        cb.iconst_1(); // true
-                        cb.iconst_0(); // false
-                        // TODO: Implement proper comparison logic
+                        var trueLabel = cb.newLabel();
+                        var endLabel = cb.newLabel();
+                        cb.ifeq(trueLabel);   // Jump to true if equal (result == 0)
+                        cb.iconst_0();        // Push false
+                        cb.goto_(endLabel);
+                        cb.labelBinding(trueLabel);
+                        cb.iconst_1();        // Push true
+                        cb.labelBinding(endLabel);
                     }
-                    case NEQ, GT, GTE, LT, LTE -> {
-                        // TODO: Implement comparison operations
+                    case NEQ -> {
                         cb.dcmpl();
+                        var trueLabel = cb.newLabel();
+                        var endLabel = cb.newLabel();
+                        cb.ifne(trueLabel);   // Jump to true if not equal (result != 0)
+                        cb.iconst_0();        // Push false
+                        cb.goto_(endLabel);
+                        cb.labelBinding(trueLabel);
+                        cb.iconst_1();        // Push true
+                        cb.labelBinding(endLabel);
+                    }
+                    case GT -> {
+                        cb.dcmpl();
+                        var trueLabel = cb.newLabel();
+                        var endLabel = cb.newLabel();
+                        cb.ifgt(trueLabel);   // Jump to true if greater (result > 0)
+                        cb.iconst_0();        // Push false
+                        cb.goto_(endLabel);
+                        cb.labelBinding(trueLabel);
+                        cb.iconst_1();        // Push true
+                        cb.labelBinding(endLabel);
+                    }
+                    case GTE -> {
+                        cb.dcmpl();
+                        var trueLabel = cb.newLabel();
+                        var endLabel = cb.newLabel();
+                        cb.ifge(trueLabel);   // Jump to true if greater or equal (result >= 0)
+                        cb.iconst_0();        // Push false
+                        cb.goto_(endLabel);
+                        cb.labelBinding(trueLabel);
+                        cb.iconst_1();        // Push true
+                        cb.labelBinding(endLabel);
+                    }
+                    case LT -> {
+                        cb.dcmpl();
+                        var trueLabel = cb.newLabel();
+                        var endLabel = cb.newLabel();
+                        cb.iflt(trueLabel);   // Jump to true if less than (result < 0)
+                        cb.iconst_0();        // Push false
+                        cb.goto_(endLabel);
+                        cb.labelBinding(trueLabel);
+                        cb.iconst_1();        // Push true
+                        cb.labelBinding(endLabel);
+                    }
+                    case LTE -> {
+                        cb.dcmpl();
+                        var trueLabel = cb.newLabel();
+                        var endLabel = cb.newLabel();
+                        cb.ifle(trueLabel);   // Jump to true if less than or equal (result <= 0)
+                        cb.iconst_0();        // Push false
+                        cb.goto_(endLabel);
+                        cb.labelBinding(trueLabel);
+                        cb.iconst_1();        // Push true
+                        cb.labelBinding(endLabel);
                     }
                     case LOR -> {
                         // TODO: Implement logical OR
+                        cb.ior(); // Placeholder - needs proper boolean handling
                     }
                     case LAN -> {
                         // TODO: Implement logical AND  
+                        cb.iand(); // Placeholder - needs proper boolean handling
                     }
                 }
             }
@@ -336,9 +400,13 @@ public class Compiler {
                     case ID -> {
                         VarInfo varInfo = varTable.get(e.pe.id.name);
                         if (varInfo != null) {
-                            // Need to infer type from context - for now assume double
-                            // TODO: Store type info in VarInfo
-                            cb.dload(varInfo.slot);
+                            // Use the stored type information
+                            switch (varInfo.type.t) {
+                                case DOUBLE -> cb.dload(varInfo.slot);
+                                case BOOLEAN -> cb.iload(varInfo.slot);
+                                case REFERENCE -> cb.aload(varInfo.slot);
+                                default -> cb.aload(varInfo.slot);
+                            }
                         }
                     }
                     case NIL -> {
@@ -399,7 +467,12 @@ public class Compiler {
             case EXPR_STMT -> {
                 compileExpr(s.e.e, classBuilder, mb, cb);
                 // Pop the result since expression statements discard values
-                cb.pop();
+                // Need to use pop2 for double values, pop for others
+                TypeInfo exprType = findExprType(s.e.e);
+                switch (exprType.t) {
+                    case DOUBLE -> cb.pop2();
+                    default -> cb.pop();
+                }
             }
 
             case IF_STMT -> {
@@ -478,18 +551,19 @@ public class Compiler {
         if (d.type == DeclType.VAR) {
             TypeInfo type = findType(d.var);
             int slot = cb.allocateLocal(type.t);
-            cb.localVariable(slot, d.var.id.toString(), type.c,
-                    cb.startLabel(), cb.endLabel());
+            // Skip localVariable debug info for now to avoid bytecode issues
+            // cb.localVariable(slot, d.var.id.toString(), type.c,
+            //         cb.startLabel(), cb.endLabel());
             switch (type.t) {
                 case BOOLEAN:
                     compileExpr(d.var.rvalue, classBuilder, mb, cb);
                     cb.istore(slot);
-                    varTable.put(d.var.id.name, new VarInfo(slot));
+                    varTable.put(d.var.id.name, new VarInfo(slot, type));
                     break;
                 case DOUBLE:
                     compileExpr(d.var.rvalue, classBuilder, mb, cb);
                     cb.dstore(slot);
-                    varTable.put(d.var.id.name, new VarInfo(slot));
+                    varTable.put(d.var.id.name, new VarInfo(slot, type));
                     break;
                 case REFERENCE:
                     if (d.var.rvalue.fe != null) {
@@ -500,29 +574,56 @@ public class Compiler {
                                 ACC_PUBLIC | ACC_STATIC,
                                 mB -> {
                                     mB.withCode(cb2 -> {
-                                        cb2.dload(0);
-                                        cb2.dload(2);
-																		/* we're so smart we inferred what the code was
-																		doing and replaced it with std. lib function */
-                                        cb2.invokestatic(ClassDesc.of("java.lang.Math"),
-                                                "pow",
-                                                MethodTypeDesc.ofDescriptor("(DD)D"));
-                                        int slot4 = cb2.allocateLocal(TypeKind.DOUBLE);
-                                        cb2.dstore(slot4);
-                                        cb2.dload(slot4);
+                                        // Create new variable scope for function
+                                        HashMap<String, VarInfo> savedVarTable = new HashMap<>(varTable);
+                                        
+                                        // Map function parameters to local variables
+                                        for (int i = 0; i < f.a.size(); i++) {
+                                            String paramName = f.a.get(i).name;
+                                            // Parameters start at slot 0 (double takes 2 slots)
+                                            varTable.put(paramName, new VarInfo(i * 2, new TypeInfo(TypeKind.DOUBLE, ClassDesc.of("double"))));
+                                        }
+                                        
+                                        // Compile function body
+                                        compileStmt(f.b, classBuilder, mB, cb2);
+                                        
+                                        // If no explicit return, return 0.0
+                                        cb2.dconst_0();
                                         cb2.dreturn();
+                                        
+                                        // Restore variable scope
+                                        varTable = savedVarTable;
                                     });
                                 });
                         methodTable.put(d.var.id.name, new MethodInfo(methCounter++, mDes));
+                        // Functions don't need variable slots - they exist only in methodTable
                     }
                     else if (d.var.rvalue.pe != null) {
                         cb.ldc(d.var.rvalue.pe.str);
                         cb.astore(slot);
-                        varTable.put(d.var.id.name, new VarInfo(slot));
+                        varTable.put(d.var.id.name, new VarInfo(slot, type));
                     }
                     else if (d.var.rvalue.ce != null) {
                         CallExpr ce = d.var.rvalue.ce;
                         compileCallExpr(d.var, d.var.rvalue.ce, classBuilder, mb, cb);
+                    }
+                    else if (d.var.rvalue.oe != null) {
+                        // Handle object literal assignment
+                        compileExpr(d.var.rvalue, classBuilder, mb, cb);
+                        cb.astore(slot);
+                        varTable.put(d.var.id.name, new VarInfo(slot, type));
+                    }
+                    else if (d.var.rvalue.pae != null) {
+                        // Handle property access assignment
+                        compileExpr(d.var.rvalue, classBuilder, mb, cb);
+                        cb.astore(slot);
+                        varTable.put(d.var.id.name, new VarInfo(slot, type));
+                    }
+                    else {
+                        // Generic expression assignment
+                        compileExpr(d.var.rvalue, classBuilder, mb, cb);
+                        cb.astore(slot);
+                        varTable.put(d.var.id.name, new VarInfo(slot, type));
                     }
                     break;
                 case VOID:
