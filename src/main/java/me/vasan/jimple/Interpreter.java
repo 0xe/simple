@@ -215,12 +215,32 @@ public class Interpreter {
                     obj.set(key, value);
                 }
                 return obj;
+            case ARRAY:
+                SimpleArray arr = new SimpleArray();
+                for (int i = 0; i < e.ae.elements.size(); i++) {
+                    Object value = interpretExpr(e.ae.elements.get(i), env);
+                    arr.add(value);
+                }
+                return arr;
             case PROPERTY_ACCESS:
                 Object object = interpretExpr(e.pae.object, env);
                 if (object instanceof SimpleObject) {
                     return ((SimpleObject) object).get(e.pae.property);
                 } else {
                     throw new RuntimeError("Cannot access property '" + e.pae.property + "' on non-object");
+                }
+            case INDEX_ACCESS:
+                Object indexObject = interpretExpr(e.iae.object, env);
+                Object indexValue = interpretExpr(e.iae.index, env);
+                
+                if (indexObject instanceof SimpleArray) {
+                    if (indexValue instanceof Number) {
+                        return ((SimpleArray) indexObject).get(((Number) indexValue).intValue());
+                    } else {
+                        throw new RuntimeError("Array index must be an integer");
+                    }
+                } else {
+                    throw new RuntimeError("Cannot index non-array object");
                 }
             default:
                 return null;

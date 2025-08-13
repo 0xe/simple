@@ -382,6 +382,10 @@ public class Parser {
                 }
                 advance();
                 expr = new Expr(new PropertyAccessExpr(expr, propertyToken.lexeme));
+            } else if (match(LEFT_BRACKET)) {
+                Expr index = parse_expr();
+                consume(RIGHT_BRACKET);
+                expr = new Expr(new IndexAccessExpr(expr, index));
             } else {
                 break;
             }
@@ -397,6 +401,8 @@ public class Parser {
             return new Expr(new PrimaryExpr(t));
         } else if (t.type == LEFT_BRACE) {
             return parseObject();
+        } else if (t.type == LEFT_BRACKET) {
+            return parseArray();
         } else {
             throw new SyntaxError("primary");
         }
@@ -426,5 +432,20 @@ public class Parser {
         
         consume(RIGHT_BRACE);
         return new Expr(new ObjectExpr(keys, values));
+    }
+
+    Expr parseArray() throws SyntaxError, EofReached {
+        consume(LEFT_BRACKET);
+        
+        ArrayList<Expr> elements = new ArrayList<>();
+        
+        if (peek().type != RIGHT_BRACKET) {
+            do {
+                elements.add(parse_expr());
+            } while (match(COMMA));
+        }
+        
+        consume(RIGHT_BRACKET);
+        return new Expr(new ArrayExpr(elements));
     }
 }

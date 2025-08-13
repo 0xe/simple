@@ -12,7 +12,7 @@ enum StmtType {
 };
 
 enum ExprType {
-    ASSIGN_EXPR, BINARY_EXPR, UNARY, FUNCTION, CALL, PRIMARY, OBJECT, PROPERTY_ACCESS
+    ASSIGN_EXPR, BINARY_EXPR, UNARY, FUNCTION, CALL, PRIMARY, OBJECT, ARRAY, PROPERTY_ACCESS, INDEX_ACCESS
 };
 
 enum PrimaryType {ID, NUM, STR, B, NIL};
@@ -243,7 +243,9 @@ class Expr extends Node {
     CallExpr ce;
     PrimaryExpr pe;
     ObjectExpr oe;
+    ArrayExpr ae;
     PropertyAccessExpr pae;
+    IndexAccessExpr iae;
 
     ExprType type;
 
@@ -279,8 +281,16 @@ class Expr extends Node {
         this.oe = e; this.type = ExprType.OBJECT;
     }
 
+    Expr(ArrayExpr e) {
+        this.ae = e; this.type = ExprType.ARRAY;
+    }
+
     Expr(PropertyAccessExpr e) {
         this.pae = e; this.type = ExprType.PROPERTY_ACCESS;
+    }
+
+    Expr(IndexAccessExpr e) {
+        this.iae = e; this.type = ExprType.INDEX_ACCESS;
     }
 }
 
@@ -390,6 +400,43 @@ class ObjectExpr {
         }
         sb.append("}");
         return sb.toString();
+    }
+}
+
+class ArrayExpr {
+    ArrayList<Expr> elements;
+
+    ArrayExpr() {
+        this.elements = new ArrayList<>();
+    }
+
+    ArrayExpr(ArrayList<Expr> elements) {
+        this.elements = elements;
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<Array> [");
+        for (int i = 0; i < elements.size(); i++) {
+            sb.append(elements.get(i));
+            if (i < elements.size() - 1) sb.append(", ");
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+}
+
+class IndexAccessExpr {
+    Expr object;
+    Expr index;
+
+    IndexAccessExpr(Expr object, Expr index) {
+        this.object = object;
+        this.index = index;
+    }
+
+    public String toString() {
+        return String.format("<IndexAccess> %s[%s]", object.toString(), index.toString());
     }
 }
 

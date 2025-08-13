@@ -146,7 +146,13 @@ public class Compiler {
             case OBJECT -> {
                 return new TypeInfo(TypeKind.REFERENCE, ClassDesc.of("me.vasan.jimple", "SimpleObject"));
             }
+            case ARRAY -> {
+                return new TypeInfo(TypeKind.REFERENCE, ClassDesc.of("me.vasan.jimple", "SimpleArray"));
+            }
             case PROPERTY_ACCESS -> {
+                return new TypeInfo(TypeKind.REFERENCE, ClassDesc.of("java.lang", "Object"));
+            }
+            case INDEX_ACCESS -> {
                 return new TypeInfo(TypeKind.REFERENCE, ClassDesc.of("java.lang", "Object"));
             }
         }
@@ -447,6 +453,38 @@ public class Compiler {
                             MethodTypeDesc.ofDescriptor("(Ljava/lang/String;Ljava/lang/Object;)V"));
                 }
             }
+            case ARRAY -> {
+                // Create new SimpleArray
+                cb.new_(ClassDesc.of("me.vasan.jimple.SimpleArray"));
+                cb.dup();
+                cb.invokespecial(ClassDesc.of("me.vasan.jimple.SimpleArray"),
+                        "<init>",
+                        MethodTypeDesc.ofDescriptor("()V"));
+                
+                // Add each element
+                for (int i = 0; i < e.ae.elements.size(); i++) {
+                    cb.dup(); // Keep array reference on stack
+                    compileExpr(e.ae.elements.get(i), classBuilder, mb, cb); // Push value
+                    
+                    // Box primitive types if needed
+                    TypeInfo valueType = findExprType(e.ae.elements.get(i));
+                    switch (valueType.t) {
+                        case DOUBLE -> {
+                            cb.invokestatic(ClassDesc.of("java.lang.Double"), "valueOf", 
+                                    MethodTypeDesc.ofDescriptor("(D)Ljava/lang/Double;"));
+                        }
+                        case BOOLEAN -> {
+                            cb.invokestatic(ClassDesc.of("java.lang.Boolean"), "valueOf", 
+                                    MethodTypeDesc.ofDescriptor("(Z)Ljava/lang/Boolean;"));
+                        }
+                    }
+                    
+                    // Call SimpleArray.add(Object)
+                    cb.invokevirtual(ClassDesc.of("me.vasan.jimple.SimpleArray"),
+                            "add",
+                            MethodTypeDesc.ofDescriptor("(Ljava/lang/Object;)V"));
+                }
+            }
             case PROPERTY_ACCESS -> {
                 // Compile object expression
                 compileExpr(e.pae.object, classBuilder, mb, cb);
@@ -458,6 +496,24 @@ public class Compiler {
                 cb.invokevirtual(ClassDesc.of("me.vasan.jimple.SimpleObject"),
                         "get",
                         MethodTypeDesc.ofDescriptor("(Ljava/lang/String;)Ljava/lang/Object;"));
+            }
+            case INDEX_ACCESS -> {
+                // Compile array expression
+                compileExpr(e.iae.object, classBuilder, mb, cb);
+                
+                // Compile index expression
+                compileExpr(e.iae.index, classBuilder, mb, cb);
+                
+                // Cast index to int
+                cb.checkcast(ClassDesc.of("java.lang.Integer"));
+                cb.invokevirtual(ClassDesc.of("java.lang.Integer"),
+                        "intValue",
+                        MethodTypeDesc.ofDescriptor("()I"));
+                
+                // Call SimpleArray.get(int)
+                cb.invokevirtual(ClassDesc.of("me.vasan.jimple.SimpleArray"),
+                        "get", 
+                        MethodTypeDesc.ofDescriptor("(I)Ljava/lang/Object;"));
             }
         }
     }
@@ -609,6 +665,12 @@ public class Compiler {
                     }
                     else if (d.var.rvalue.oe != null) {
                         // Handle object literal assignment
+                        compileExpr(d.var.rvalue, classBuilder, mb, cb);
+                        cb.astore(slot);
+                        varTable.put(d.var.id.name, new VarInfo(slot, type));
+                    }
+                    else if (d.var.rvalue.ae != null) {
+                        // Handle array literal assignment
                         compileExpr(d.var.rvalue, classBuilder, mb, cb);
                         cb.astore(slot);
                         varTable.put(d.var.id.name, new VarInfo(slot, type));

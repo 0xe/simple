@@ -1,0 +1,3 @@
+let x = 10;
+print("Hello from compiler!");
+print(x + 5);

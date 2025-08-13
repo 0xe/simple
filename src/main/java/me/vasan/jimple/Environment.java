@@ -47,7 +47,7 @@ public class Environment {
 
     Object get(String key) {
         Object val = entries.get(key);
-        if (val == null)
+        if (val == null && this.parent != null)
             return this.parent.get(key);
         return val;
     }

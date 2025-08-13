@@ -39,7 +39,7 @@ class EofReached extends Exception {
 
 enum TT {
     /* single char */
-    LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE, AMP, PIPE, HAT,
+    LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE, LEFT_BRACKET, RIGHT_BRACKET, AMP, PIPE, HAT,
     COMMA, DOT, MINUS, PLUS, SEMICOLON, SLASH, STAR, TILDE, MOD, COLON,
 
     /* multi-char */
@@ -247,6 +247,8 @@ public class Scanner {
             case ')': addToken(TT.RIGHT_PAREN); break;
             case '{': addToken(TT.LEFT_BRACE); break;
             case '}': addToken(TT.RIGHT_BRACE); break;
+            case '[': addToken(TT.LEFT_BRACKET); break;
+            case ']': addToken(TT.RIGHT_BRACKET); break;
             case ',': addToken(TT.COMMA); break;
             case '.': addToken(TT.DOT); break;
             case '-': addToken(TT.MINUS); break;

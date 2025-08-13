@@ -1,0 +1,4 @@
+let kids = ["akshara", "dhruv", "trishika"];
+print(kids[0]);
+print(kids[1]);
+print(kids[2]);

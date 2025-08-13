@@ -41,67 +41,24 @@ while (foo > 32) {
 	// do something
 }
 
-// objects, arrays & immutable types *TODO*
+// objects, arrays
 let foo = [1, 2, 3];
-foo[3]; // ERROR! -- compile error
+foo[3]; // nil
 
-// special "args" available at top-lovel *TODO*
-let bar = {
-    'hello': 32,
-    'world': 43
+// objects
+let Rect = {
+    length: 12,
+    width: 24,
+    name: "hello",
+    approved: false
 };
-const baz = 23;
-
-// type declarations and custom types *TODO*
-type Rect = {
-    'length': number,
-    'width': number,
-    'name': string,
-    'approved': boolean
-};
-
-let f1: Rect = {32, 24, 'hello', true};
-let b1 = 12; // basic types are inferred
-let b2: number; // without init
-
-// reference types *TODO*
-let b3 = &b1; // `&` operator for addressof()
-let b4 = *b3; // `*` dereference
-*(b3++); // reference manipulation (not supported on the JVM)
-
-// modules *TODO*
-let f = require("math.sim");
-f.add(2, 3);
-
-// function short-hand syntax *TODO*
-let five = (bar, baz) -> {
-    bar + baz;
-}(2, 3);
-
-// for loops *TODO*
-for (i in bar) {
-    print(i);
-    print(bar[i]);
-} // prints 'hello32world43'
-
-for (i in range(0, 10)) {
-    print(i);
-} // prints 0123456789
-
-// optimizations *TODO*
-- inlining
-- interned strings
-- object shapes
-- ...
-
 ```
 
-## standard library functions (TODO)
+## standard library functions (LOL)
 
 ```
 // time & date: clock();
-// unix/io: print(), read(), open(), close(), getdirentries(), ...
-// string, mathematics.
+// io: print()
 ```
 
 ## compilation 
