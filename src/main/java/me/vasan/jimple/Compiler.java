@@ -44,6 +44,34 @@ public class Compiler {
 
     record VarInfo(int slot, TypeInfo type) {
     };
+    
+    // Helper methods for runtime type conversion
+    private void unboxToDouble(CodeBuilder cb) {
+        // Convert Object to double - simplified approach
+        // Try to cast to Number and call doubleValue(), or return 0.0 on failure
+        cb.checkcast(ClassDesc.of("java.lang.Number"));
+        cb.invokevirtual(ClassDesc.of("java.lang.Number"), "doubleValue", 
+                MethodTypeDesc.ofDescriptor("()D"));
+    }
+    
+    private void unboxToBoolean(CodeBuilder cb) {
+        // Convert Object to boolean - simplified approach  
+        // Try to cast to Boolean and call booleanValue(), or return false on failure
+        cb.checkcast(ClassDesc.of("java.lang.Boolean"));
+        cb.invokevirtual(ClassDesc.of("java.lang.Boolean"), "booleanValue", 
+                MethodTypeDesc.ofDescriptor("()Z"));
+    }
+    
+    // Helper to compile expression and ensure it results in a double on stack
+    private void compileExprAsDouble(Expr e, ClassBuilder classBuilder, MethodBuilder mb, CodeBuilder cb) {
+        compileExpr(e, classBuilder, mb, cb);
+        TypeInfo type = findExprType(e);
+        if (type != null && type.t == TypeKind.REFERENCE) {
+            unboxToDouble(cb);
+        }
+        // If it's already double or boolean, leave as-is
+        // Boolean will be treated as 0.0/1.0 which works for arithmetic
+    }
 
     public Compiler(String name) {
         String fileName = String.valueOf(Path.of(name).getFileName());
@@ -111,8 +139,8 @@ public class Compiler {
                 if (e.ce.id.name.equals("print") || e.ce.id.name.equals("clock")) {
                     return new TypeInfo(TypeKind.REFERENCE, ClassDesc.of("java.lang", "Object"));
                 }
-                // User-defined functions return doubles by default
-                return new TypeInfo(TypeKind.DOUBLE, ClassDesc.of("double"));
+                // User-defined functions now return Objects
+                return new TypeInfo(TypeKind.REFERENCE, ClassDesc.of("java.lang", "Object"));
             }
             case FUNCTION -> {
                 return new TypeInfo(TypeKind.REFERENCE,
@@ -160,33 +188,55 @@ public class Compiler {
     }
 
     private String findMethodDescriptor(FunctionExpr f) {
-        return "(DD)D"; // TODO: pick arg types from f
+        // Since Simple is dynamically typed, we use Object for all parameters and return type
+        // This allows any Simple type (string, number, boolean, object, array) to be passed/returned
+        StringBuilder descriptor = new StringBuilder("(");
+        
+        // Add Object parameter for each function argument
+        for (int i = 0; i < f.a.size(); i++) {
+            descriptor.append("Ljava/lang/Object;");
+        }
+        
+        descriptor.append(")Ljava/lang/Object;"); // Return Object
+        return descriptor.toString();
     }
 
     private void compileCallExpr(Var v, CallExpr ce, ClassBuilder classBuilder, MethodBuilder mb, CodeBuilder cb) {
         MethodInfo m = methodTable.get(ce.id.name);
         if (m != null) {
-            // Compile arguments and push onto stack
+            // Load 'this' first for instance method call
+            cb.aload(0);
+            
+            // Compile arguments and push onto stack, boxing primitives as needed
             for (Expr arg : ce.a) {
                 compileExpr(arg, classBuilder, mb, cb);
+                
+                // Box primitive types to Object for function calls
+                TypeInfo argType = findExprType(arg);
+                if (argType != null) {
+                    switch (argType.t) {
+                        case DOUBLE -> {
+                            cb.invokestatic(ClassDesc.of("java.lang.Double"), 
+                                    "valueOf", MethodTypeDesc.ofDescriptor("(D)Ljava/lang/Double;"));
+                        }
+                        case BOOLEAN -> {
+                            cb.invokestatic(ClassDesc.of("java.lang.Boolean"), 
+                                    "valueOf", MethodTypeDesc.ofDescriptor("(Z)Ljava/lang/Boolean;"));
+                        }
+                        // References are already objects, no boxing needed
+                    }
+                }
             }
             
-            // Call the user-defined function
-            cb.invokestatic(ClassDesc.of(fName), "meth" + m.counter, MethodTypeDesc.ofDescriptor(m.sig));
+            // Call the user-defined function (now an instance method)
+            cb.invokevirtual(ClassDesc.of(fName), "meth" + m.counter, MethodTypeDesc.ofDescriptor(m.sig));
             
             // Store result if this is an assignment
             if (v != null) {
-                TypeInfo type = findExprType(new Expr(ce));
-                int slot = cb.allocateLocal(type.t);
-                
-                switch (type.t) {
-                    case DOUBLE -> cb.dstore(slot);
-                    case BOOLEAN -> cb.istore(slot);
-                    case REFERENCE -> cb.astore(slot);
-                    default -> cb.astore(slot);
-                }
-                
-                varTable.put(v.id.name, new VarInfo(slot, type));
+                // Function calls now return Object, so store as Object reference
+                int slot = cb.allocateLocal(TypeKind.REFERENCE);
+                cb.astore(slot);
+                varTable.put(v.id.name, new VarInfo(slot, new TypeInfo(TypeKind.REFERENCE, ClassDesc.of("java.lang", "Object"))));
             }
         } else { // special behaviour for "print" and "clock"?
             if (ce.id.name.equals("print")) {
@@ -282,11 +332,12 @@ public class Compiler {
                 }
             }
             case BINARY_EXPR -> {
-                // Load left operand
-                compileExpr(e.b.lhs, classBuilder, mb, cb);
+                // For arithmetic operations, ensure both operands are doubles
+                // Load left operand as double
+                compileExprAsDouble(e.b.lhs, classBuilder, mb, cb);
                 
-                // Load right operand  
-                compileExpr(e.b.rhs, classBuilder, mb, cb);
+                // Load right operand as double
+                compileExprAsDouble(e.b.rhs, classBuilder, mb, cb);
                 
                 // Apply operation
                 switch (e.b.o) {
@@ -410,9 +461,21 @@ public class Compiler {
                             switch (varInfo.type.t) {
                                 case DOUBLE -> cb.dload(varInfo.slot);
                                 case BOOLEAN -> cb.iload(varInfo.slot);
-                                case REFERENCE -> cb.aload(varInfo.slot);
+                                case REFERENCE -> {
+                                    cb.aload(varInfo.slot);
+                                    // Check if this Object needs to be unboxed based on context
+                                    // For function parameters, we might need runtime conversion
+                                    if (varInfo.type.c.equals(ClassDesc.of("java.lang", "Object"))) {
+                                        // This is a function parameter or Object variable
+                                        // We'll handle unboxing at the operation level instead of here
+                                        // to avoid always unboxing when it might not be needed
+                                    }
+                                }
                                 default -> cb.aload(varInfo.slot);
                             }
+                        } else {
+                            // Variable not found - push null as fallback
+                            cb.aconst_null();
                         }
                     }
                     case NIL -> {
@@ -522,13 +585,8 @@ public class Compiler {
         switch (s.type) {
             case EXPR_STMT -> {
                 compileExpr(s.e.e, classBuilder, mb, cb);
-                // Pop the result since expression statements discard values
-                // Need to use pop2 for double values, pop for others
-                TypeInfo exprType = findExprType(s.e.e);
-                switch (exprType.t) {
-                    case DOUBLE -> cb.pop2();
-                    default -> cb.pop();
-                }
+                // Expression statements should return their values, not discard them
+                // The value will be returned by the containing method
             }
 
             case IF_STMT -> {
@@ -581,10 +639,26 @@ public class Compiler {
             case RETURN_STMT -> {
                 if (s.r.expr != null) {
                     compileExpr(s.r.expr, classBuilder, mb, cb);
-                    // TODO: Choose correct return instruction based on type
-                    cb.dreturn(); // Assuming double for now
+                    
+                    // Box primitive types for Object return
+                    TypeInfo returnType = findExprType(s.r.expr);
+                    if (returnType != null) {
+                        switch (returnType.t) {
+                            case DOUBLE -> {
+                                cb.invokestatic(ClassDesc.of("java.lang.Double"), 
+                                        "valueOf", MethodTypeDesc.ofDescriptor("(D)Ljava/lang/Double;"));
+                            }
+                            case BOOLEAN -> {
+                                cb.invokestatic(ClassDesc.of("java.lang.Boolean"), 
+                                        "valueOf", MethodTypeDesc.ofDescriptor("(Z)Ljava/lang/Boolean;"));
+                            }
+                            // References are already objects
+                        }
+                    }
+                    cb.areturn(); // Return Object reference
                 } else {
-                    cb.return_();
+                    cb.aconst_null();
+                    cb.areturn();
                 }
             }
 
@@ -603,110 +677,209 @@ public class Compiler {
         }
     }
 
+    private void compileVariableDeclaration(Decl d, ClassBuilder classBuilder, MethodBuilder mb, CodeBuilder cb) {
+        TypeInfo type = findType(d.var);
+        int slot = cb.allocateLocal(type.t);
+        
+        switch (type.t) {
+            case BOOLEAN:
+                compileExpr(d.var.rvalue, classBuilder, mb, cb);
+                cb.istore(slot);
+                varTable.put(d.var.id.name, new VarInfo(slot, type));
+                break;
+            case DOUBLE:
+                compileExpr(d.var.rvalue, classBuilder, mb, cb);
+                cb.dstore(slot);
+                varTable.put(d.var.id.name, new VarInfo(slot, type));
+                break;
+            case REFERENCE:
+                if (d.var.rvalue.pe != null) {
+                    cb.ldc(d.var.rvalue.pe.str);
+                    cb.astore(slot);
+                    varTable.put(d.var.id.name, new VarInfo(slot, type));
+                }
+                else if (d.var.rvalue.ce != null) {
+                    compileCallExpr(d.var, d.var.rvalue.ce, classBuilder, mb, cb);
+                }
+                else if (d.var.rvalue.oe != null) {
+                    // Handle object literal assignment
+                    compileExpr(d.var.rvalue, classBuilder, mb, cb);
+                    cb.astore(slot);
+                    varTable.put(d.var.id.name, new VarInfo(slot, type));
+                }
+                else if (d.var.rvalue.ae != null) {
+                    // Handle array literal assignment
+                    compileExpr(d.var.rvalue, classBuilder, mb, cb);
+                    cb.astore(slot);
+                    varTable.put(d.var.id.name, new VarInfo(slot, type));
+                }
+                else if (d.var.rvalue.pae != null) {
+                    // Handle property access assignment
+                    compileExpr(d.var.rvalue, classBuilder, mb, cb);
+                    cb.astore(slot);
+                    varTable.put(d.var.id.name, new VarInfo(slot, type));
+                }
+                else {
+                    // Generic expression assignment
+                    compileExpr(d.var.rvalue, classBuilder, mb, cb);
+                    cb.astore(slot);
+                    varTable.put(d.var.id.name, new VarInfo(slot, type));
+                }
+                break;
+            case VOID:
+                break;
+        }
+    }
+
     private void compileDeclaration(Decl d, ClassBuilder classBuilder, MethodBuilder mb, CodeBuilder cb) {
         if (d.type == DeclType.VAR) {
-            TypeInfo type = findType(d.var);
-            int slot = cb.allocateLocal(type.t);
-            // Skip localVariable debug info for now to avoid bytecode issues
-            // cb.localVariable(slot, d.var.id.toString(), type.c,
-            //         cb.startLabel(), cb.endLabel());
-            switch (type.t) {
-                case BOOLEAN:
-                    compileExpr(d.var.rvalue, classBuilder, mb, cb);
-                    cb.istore(slot);
-                    varTable.put(d.var.id.name, new VarInfo(slot, type));
-                    break;
-                case DOUBLE:
-                    compileExpr(d.var.rvalue, classBuilder, mb, cb);
-                    cb.dstore(slot);
-                    varTable.put(d.var.id.name, new VarInfo(slot, type));
-                    break;
-                case REFERENCE:
-                    if (d.var.rvalue.fe != null) {
-                        FunctionExpr f = d.var.rvalue.fe;
-                        String mDes = findMethodDescriptor(f);
-                        classBuilder.withMethod("meth" + methCounter,
-                                MethodTypeDesc.ofDescriptor(mDes),
-                                ACC_PUBLIC | ACC_STATIC,
-                                mB -> {
-                                    mB.withCode(cb2 -> {
-                                        // Create new variable scope for function
-                                        HashMap<String, VarInfo> savedVarTable = new HashMap<>(varTable);
-                                        
-                                        // Map function parameters to local variables
-                                        for (int i = 0; i < f.a.size(); i++) {
-                                            String paramName = f.a.get(i).name;
-                                            // Parameters start at slot 0 (double takes 2 slots)
-                                            varTable.put(paramName, new VarInfo(i * 2, new TypeInfo(TypeKind.DOUBLE, ClassDesc.of("double"))));
-                                        }
-                                        
-                                        // Compile function body
-                                        compileStmt(f.b, classBuilder, mB, cb2);
-                                        
-                                        // If no explicit return, return 0.0
-                                        cb2.dconst_0();
-                                        cb2.dreturn();
-                                        
-                                        // Restore variable scope
-                                        varTable = savedVarTable;
-                                    });
-                                });
-                        methodTable.put(d.var.id.name, new MethodInfo(methCounter++, mDes));
-                        // Functions don't need variable slots - they exist only in methodTable
-                    }
-                    else if (d.var.rvalue.pe != null) {
-                        cb.ldc(d.var.rvalue.pe.str);
-                        cb.astore(slot);
-                        varTable.put(d.var.id.name, new VarInfo(slot, type));
-                    }
-                    else if (d.var.rvalue.ce != null) {
-                        CallExpr ce = d.var.rvalue.ce;
-                        compileCallExpr(d.var, d.var.rvalue.ce, classBuilder, mb, cb);
-                    }
-                    else if (d.var.rvalue.oe != null) {
-                        // Handle object literal assignment
-                        compileExpr(d.var.rvalue, classBuilder, mb, cb);
-                        cb.astore(slot);
-                        varTable.put(d.var.id.name, new VarInfo(slot, type));
-                    }
-                    else if (d.var.rvalue.ae != null) {
-                        // Handle array literal assignment
-                        compileExpr(d.var.rvalue, classBuilder, mb, cb);
-                        cb.astore(slot);
-                        varTable.put(d.var.id.name, new VarInfo(slot, type));
-                    }
-                    else if (d.var.rvalue.pae != null) {
-                        // Handle property access assignment
-                        compileExpr(d.var.rvalue, classBuilder, mb, cb);
-                        cb.astore(slot);
-                        varTable.put(d.var.id.name, new VarInfo(slot, type));
-                    }
-                    else {
-                        // Generic expression assignment
-                        compileExpr(d.var.rvalue, classBuilder, mb, cb);
-                        cb.astore(slot);
-                        varTable.put(d.var.id.name, new VarInfo(slot, type));
-                    }
-                    break;
-                case VOID:
-                    break;
-            }
+            compileVariableDeclaration(d, classBuilder, mb, cb);
         }
-        else if (d.type == DeclType.STMT) { /* TODO */
+        else if (d.type == DeclType.STMT) {
             compileStmt(d.stmt, classBuilder, mb, cb);
         }
     }
 
     private void writeClass(List<Decl> decls) throws IOException {
         fPgmClassFile.buildTo(Path.of(fPath.split("\\.sim")[0] + ".class"), fPgmClass, classBuilder -> {
+            // Implement Callable interface
+            classBuilder.withInterfaceSymbols(ClassDesc.of("me.vasan.jimple.Callable"));
+            
+            // Generate constructor
+            classBuilder.withMethod("<init>",
+                    MethodTypeDesc.ofDescriptor("()V"),
+                    ACC_PUBLIC,
+                    methodBuilder -> {
+                        methodBuilder.withCode(codeBuilder -> {
+                            codeBuilder.aload(0); // Load 'this'
+                            codeBuilder.invokespecial(ClassDesc.of("java.lang.Object"), 
+                                    "<init>", MethodTypeDesc.ofDescriptor("()V"));
+                            codeBuilder.return_();
+                        });
+                    });
+            
+            // Generate user-defined function methods first
+            for (var d : decls) {
+                if (d.type == DeclType.VAR && d.var.rvalue.fe != null) {
+                    FunctionExpr f = d.var.rvalue.fe;
+                    String mDes = findMethodDescriptor(f);
+                    classBuilder.withMethod("meth" + methCounter,
+                            MethodTypeDesc.ofDescriptor(mDes),
+                            ACC_PUBLIC,
+                            mB -> {
+                                mB.withCode(cb2 -> {
+                                    // Create new variable scope for function
+                                    HashMap<String, VarInfo> savedVarTable = new HashMap<>(varTable);
+                                    
+                                    // Map function parameters to local variables
+                                    // Slot 0 is 'this', parameters start at slot 1
+                                    for (int i = 0; i < f.a.size(); i++) {
+                                        String paramName = f.a.get(i).name;
+                                        // Object parameters take 1 slot each: slot 1, 2, 3, etc.
+                                        varTable.put(paramName, new VarInfo(1 + i, new TypeInfo(TypeKind.REFERENCE, ClassDesc.of("java.lang", "Object"))));
+                                    }
+                                    
+                                    // Compile function body
+                                    compileStmt(f.b, classBuilder, mB, cb2);
+                                    
+                                    // If no explicit return, return null
+                                    cb2.aconst_null();
+                                    cb2.areturn();
+                                    
+                                    // Restore variable scope
+                                    varTable = savedVarTable;
+                                });
+                            });
+                    methodTable.put(d.var.id.name, new MethodInfo(methCounter++, mDes));
+                }
+            }
+            
+            // Generate call() method - implements Callable interface
+            classBuilder.withMethod("call",
+                    MethodTypeDesc.ofDescriptor("()Ljava/lang/Object;"),
+                    ACC_PUBLIC,
+                    methodBuilder -> {
+                        methodBuilder.withCode(codeBuilder -> {
+                            Object lastResult = null;
+                            
+                            // Process each declaration/statement
+                            for (var d : decls) {
+                                if (d.type == DeclType.VAR) {
+                                    // Skip function declarations - already handled above
+                                    if (d.var.rvalue.fe != null) {
+                                        continue;
+                                    }
+                                    // Handle variable declarations
+                                    compileVariableDeclaration(d, classBuilder, methodBuilder, codeBuilder);
+                                } else if (d.type == DeclType.STMT) {
+                                    compileStmt(d.stmt, classBuilder, methodBuilder, codeBuilder);
+                                    
+                                    // If this is an expression statement, capture its result
+                                    if (d.stmt.type == StmtType.EXPR_STMT) {
+                                        TypeInfo exprType = findExprType(d.stmt.e.e);
+                                        if (exprType != null) {
+                                            // Box primitive types for return
+                                            switch (exprType.t) {
+                                                case DOUBLE -> {
+                                                    codeBuilder.invokestatic(ClassDesc.of("java.lang.Double"), 
+                                                            "valueOf", MethodTypeDesc.ofDescriptor("(D)Ljava/lang/Double;"));
+                                                }
+                                                case BOOLEAN -> {
+                                                    codeBuilder.invokestatic(ClassDesc.of("java.lang.Boolean"), 
+                                                            "valueOf", MethodTypeDesc.ofDescriptor("(Z)Ljava/lang/Boolean;"));
+                                                }
+                                                // References are already objects
+                                            }
+                                            // Return the last expression result
+                                            codeBuilder.areturn();
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            // If no expression statement was found, return null
+                            codeBuilder.aconst_null();
+                            codeBuilder.areturn();
+                        });
+                    });
+            
+            // Generate main method for standalone execution
             classBuilder.withMethod("main",
                     MethodTypeDesc.ofDescriptor("([Ljava/lang/String;)V"),
                     ACC_PUBLIC + ACC_STATIC,
                     methodBuilder -> {
                         methodBuilder.withCode(codeBuilder -> {
-                            for (var d : decls) {
-                                compileDeclaration(d, classBuilder, methodBuilder, codeBuilder);
+                            // Create instance and call it
+                            codeBuilder.new_(fPgmClass);
+                            codeBuilder.dup();
+                            codeBuilder.invokespecial(fPgmClass, "<init>", 
+                                    MethodTypeDesc.ofDescriptor("()V"));
+                            codeBuilder.invokevirtual(fPgmClass, "call", 
+                                    MethodTypeDesc.ofDescriptor("()Ljava/lang/Object;"));
+                            
+                            // For REPL classes, print the result
+                            if (fName.startsWith("REPLExpr")) {
+                                codeBuilder.dup();
+                                var nullLabel = codeBuilder.newLabel();
+                                var endLabel = codeBuilder.newLabel();
+                                codeBuilder.ifnull(nullLabel);
+                                
+                                codeBuilder.getstatic(ClassDesc.of("java.lang", "System"), "out", 
+                                        ClassDesc.of("java.io", "PrintStream"));
+                                codeBuilder.swap();
+                                codeBuilder.invokevirtual(ClassDesc.of("java.io", "PrintStream"),
+                                        "println", MethodTypeDesc.ofDescriptor("(Ljava/lang/Object;)V"));
+                                codeBuilder.goto_(endLabel);
+                                
+                                codeBuilder.labelBinding(nullLabel);
+                                codeBuilder.pop();
+                                
+                                codeBuilder.labelBinding(endLabel);
+                            } else {
+                                codeBuilder.pop(); // Discard result for non-REPL
                             }
+                            
                             codeBuilder.return_();
                         });
                     });

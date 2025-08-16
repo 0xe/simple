@@ -1,5 +1,5 @@
 me.vasan.jimple.SyntaxError
-	at me.vasan.jimple.Parser.primary(Parser.java:403)
+	at me.vasan.jimple.Parser.primary(Parser.java:407)
 	at me.vasan.jimple.Parser.call(Parser.java:361)
 	at me.vasan.jimple.Parser.function(Parser.java:356)
 	at me.vasan.jimple.Parser.unary(Parser.java:335)
@@ -14,6 +14,6 @@ me.vasan.jimple.SyntaxError
 	at me.vasan.jimple.Parser.parse_var(Parser.java:134)
 	at me.vasan.jimple.Parser.parse_decl(Parser.java:115)
 	at me.vasan.jimple.Parser.parse(Parser.java:105)
-	at me.vasan.jimple.Jimple.run(Jimple.java:141)
-	at me.vasan.jimple.Jimple.runFile(Jimple.java:157)
-	at me.vasan.jimple.Jimple.main(Jimple.java:249)
+	at me.vasan.jimple.Jimple.run(Jimple.java:152)
+	at me.vasan.jimple.Jimple.runFile(Jimple.java:174)
+	at me.vasan.jimple.Jimple.main(Jimple.java:275)

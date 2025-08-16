@@ -23,7 +23,7 @@ public class CompilerIntegrationTest {
         try {
             // Compile the .sim file
             ProcessBuilder compilePb = new ProcessBuilder(
-                "java", "--enable-preview", "-cp", ".", 
+                "java", "--enable-preview", "-cp", "src/main/java:.", 
                 "me.vasan.jimple.Jimple", tempFile
             );
             compilePb.directory(new File("."));
@@ -49,7 +49,7 @@ public class CompilerIntegrationTest {
             }
             
             // Execute the compiled program
-            ProcessBuilder runPb = new ProcessBuilder("java", "-cp", ".:tests", className);
+            ProcessBuilder runPb = new ProcessBuilder("java", "--enable-preview", "-cp", ".:tests", className);
             runPb.directory(new File("."));
             runPb.redirectErrorStream(true);
             
@@ -179,5 +179,101 @@ public class CompilerIntegrationTest {
         Assert.assertTrue("Compiled output should contain loop iterations", 
                          output.contains("0") && output.contains("1") && 
                          output.contains("2") && output.contains("Done"));
+    }
+    
+    @Test
+    public void testREPLExpressionPrinting() throws Exception {
+        String code = "2 + 3";
+        
+        String output = runCompilerAndExecute(code, "REPLExpr0");
+        System.out.println("REPL expression output: " + output);
+        Assert.assertTrue("REPL expression should print its result", 
+                         output.contains("5.0"));
+    }
+    
+    @Test
+    public void testBlocksAndScopingCompilation() throws Exception {
+        String code = """
+            let outer = 10;
+            {
+                let inner = 20;
+                let outer = 30;
+                print("Inner scope outer: ", outer);
+                print("Inner: ", inner);
+            }
+            print("Outer scope outer: ", outer);
+            """;
+        
+        String output = runCompilerAndExecute(code, "TestBlocks");
+        System.out.println("Compiled blocks output: " + output);
+        Assert.assertTrue("Compiled output should show proper scoping", 
+                         output.contains("30") && output.contains("20") && output.contains("10"));
+    }
+    
+    @Test
+    public void testArrayLiteralsCompilation() throws Exception {
+        String code = """
+            let arr = [1, 2, 3, 4];
+            print("First: ", arr[0]);
+            print("Second: ", arr[1]);
+            print("Third: ", arr[2]);
+            print("Fourth: ", arr[3]);
+            print("Out of bounds: ", arr[5]);
+            """;
+        
+        String output = runCompilerAndExecute(code, "TestArrays");
+        System.out.println("Compiled arrays output: " + output);
+        Assert.assertTrue("Compiled output should contain array access results", 
+                         output.contains("1") && output.contains("2") && 
+                         output.contains("3") && output.contains("4"));
+    }
+    
+    @Test
+    public void testComplexFunctionFromReadme() throws Exception {
+        String code = """
+            let pi = 3.14;
+            let e = 2.718;
+            
+            let expt = function(a, n) {
+                if (n == 0) { 
+                    return 1; 
+                } else { 
+                    let e = 1; let i = 0; 
+                    while (i < n) { 
+                        i = i+1;
+                        e = e*a;
+                    }
+                    return e;
+                }
+            };
+            
+            print(expt(2,pi));
+            print(expt(3,e));
+            """;
+        
+        String output = runCompilerAndExecute(code, "TestExptFunction");
+        System.out.println("Compiled expt function output: " + output);
+        Assert.assertTrue("Compiled output should contain exponentiation results", 
+                         !output.isEmpty());
+    }
+    
+    @Test
+    public void testStandardLibraryFunctions() throws Exception {
+        String code = """
+            print("Current time: ", clock());
+            print("Hello world!");
+            let start = clock();
+            let i = 0;
+            while (i < 100) {
+                i = i + 1;
+            }
+            let end = clock();
+            print("Time elapsed: ", end - start);
+            """;
+        
+        String output = runCompilerAndExecute(code, "TestStdLib");
+        System.out.println("Compiled std lib output: " + output);
+        Assert.assertTrue("Compiled output should contain clock and print results", 
+                         output.contains("Hello world!") && output.contains("Current time"));
     }
 }

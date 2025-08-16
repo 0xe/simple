@@ -1,67 +1,23 @@
-java.lang.IllegalArgumentException: Operand stack underflow at bytecode offset 57 of method meth0(double,double)
-  - max stack: 65535
-    max locals: 65535
-    attributes: []
-    //stack map frame @0: {locals: [double, double2, double, double2], stack: []}
-    0: {opcode: NEW, type: NativeFunction}
-    3: {opcode: DUP}
-    4: {opcode: LDC, constant value: print}
-    6: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
-    9: {opcode: LDC, constant value: 2}
-    11: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
-    14: {opcode: DUP}
-    15: {opcode: ICONST_0, constant value: 0}
-    16: {opcode: LDC, constant value: From inner: }
-    18: {opcode: AASTORE}
-    19: {opcode: DUP}
-    20: {opcode: ICONST_1, constant value: 1}
-    21: {opcode: ALOAD_1, slot: 1}
-    22: {opcode: AASTORE}
-    23: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
-    26: {opcode: POP}
-    27: {opcode: NEW, type: NativeFunction}
-    30: {opcode: DUP}
-    31: {opcode: LDC, constant value: print}
-    33: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
-    36: {opcode: LDC, constant value: 2}
-    38: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
-    41: {opcode: DUP}
-    42: {opcode: ICONST_0, constant value: 0}
-    43: {opcode: LDC, constant value: From inner: }
-    45: {opcode: AASTORE}
-    46: {opcode: DUP}
-    47: {opcode: ICONST_1, constant value: 1}
-    48: {opcode: ALOAD, slot: 4}
-    50: {opcode: AASTORE}
-    51: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
-    54: {opcode: POP}
-    55: {opcode: LDC, constant value: inner result}
-    57: {opcode: DRETURN}
-    58: {opcode: DCONST_0, constant value: 0.0}
-    59: {opcode: DRETURN}
-
-	at java.base/jdk.internal.classfile.impl.StackMapGenerator.generatorError(StackMapGenerator.java:850)
-	at java.base/jdk.internal.classfile.impl.StackMapGenerator.generatorError(StackMapGenerator.java:835)
-	at java.base/jdk.internal.classfile.impl.StackMapGenerator$Frame.decStack(StackMapGenerator.java:1007)
-	at java.base/jdk.internal.classfile.impl.StackMapGenerator.processBlock(StackMapGenerator.java:648)
-	at java.base/jdk.internal.classfile.impl.StackMapGenerator.processMethod(StackMapGenerator.java:454)
-	at java.base/jdk.internal.classfile.impl.StackMapGenerator.generate(StackMapGenerator.java:303)
-	at java.base/jdk.internal.classfile.impl.StackMapGenerator.<init>(StackMapGenerator.java:246)
-	at java.base/jdk.internal.classfile.impl.StackMapGenerator.of(StackMapGenerator.java:157)
-	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder$4.generateStackMaps(DirectCodeBuilder.java:341)
-	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder$4.tryGenerateStackMaps(DirectCodeBuilder.java:349)
-	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder$4.writeBody(DirectCodeBuilder.java:384)
-	at java.base/jdk.internal.classfile.impl.UnboundAttribute$AdHocAttribute.writeTo(UnboundAttribute.java:1099)
-	at java.base/jdk.internal.classfile.impl.Util.writeAttribute(Util.java:230)
-	at java.base/jdk.internal.classfile.impl.AttributeHolder.writeTo(AttributeHolder.java:71)
-	at java.base/jdk.internal.classfile.impl.DirectMethodBuilder.writeTo(DirectMethodBuilder.java:146)
-	at java.base/jdk.internal.classfile.impl.Util.writeList(Util.java:247)
-	at java.base/jdk.internal.classfile.impl.DirectClassBuilder.build(DirectClassBuilder.java:198)
-	at java.base/jdk.internal.classfile.impl.ClassFileImpl.build(ClassFileImpl.java:145)
+Exception in thread "main" java.lang.Error: bad call function
+	at me.vasan.jimple.Compiler.compileCallExpr(Compiler.java:299)
+	at me.vasan.jimple.Compiler.compileExpr(Compiler.java:437)
+	at me.vasan.jimple.Compiler.compileStmt(Compiler.java:641)
+	at me.vasan.jimple.Compiler.compileDeclaration(Compiler.java:739)
+	at me.vasan.jimple.Compiler.compileStmt(Compiler.java:671)
+	at me.vasan.jimple.Compiler.lambda$writeClass$4(Compiler.java:783)
+	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder.build(DirectCodeBuilder.java:93)
+	at java.base/jdk.internal.classfile.impl.DirectMethodBuilder.withCode(DirectMethodBuilder.java:118)
+	at java.base/jdk.internal.classfile.impl.DirectMethodBuilder.withCode(DirectMethodBuilder.java:125)
+	at me.vasan.jimple.Compiler.lambda$writeClass$3(Compiler.java:770)
+	at java.base/jdk.internal.classfile.impl.DirectMethodBuilder.run(DirectMethodBuilder.java:139)
+	at java.base/jdk.internal.classfile.impl.DirectClassBuilder.withMethod(DirectClassBuilder.java:117)
+	at java.base/java.lang.classfile.ClassBuilder.withMethod(ClassBuilder.java:313)
+	at me.vasan.jimple.Compiler.lambda$writeClass$0(Compiler.java:766)
+	at java.base/jdk.internal.classfile.impl.ClassFileImpl.build(ClassFileImpl.java:144)
 	at java.base/java.lang.classfile.ClassFile.build(ClassFile.java:558)
 	at java.base/java.lang.classfile.ClassFile.buildTo(ClassFile.java:587)
-	at me.vasan.jimple.Compiler.writeClass(Compiler.java:680)
-	at me.vasan.jimple.Compiler.compile(Compiler.java:62)
-	at me.vasan.jimple.Jimple.compile(Jimple.java:43)
-	at me.vasan.jimple.Jimple.compileFile(Jimple.java:151)
-	at me.vasan.jimple.Jimple.main(Jimple.java:246)
+	at me.vasan.jimple.Compiler.writeClass(Compiler.java:744)
+	at me.vasan.jimple.Compiler.compile(Compiler.java:90)
+	at me.vasan.jimple.Jimple.compile(Jimple.java:46)
+	at me.vasan.jimple.Jimple.compileFile(Jimple.java:168)
+	at me.vasan.jimple.Jimple.main(Jimple.java:272)

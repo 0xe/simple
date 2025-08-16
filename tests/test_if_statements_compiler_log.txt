@@ -1,0 +1,168 @@
+java.lang.IllegalArgumentException: Stack size mismatch at bytecode offset 42 of method call()
+  - max stack: 65535
+    max locals: 65535
+    attributes: []
+    //stack map frame @0: {locals: [test_if_statements], stack: []}
+    0: {opcode: LDC2_W, constant value: 10.0}
+    3: {opcode: DSTORE_1, slot: 1}
+    4: {opcode: DLOAD_1, slot: 1}
+    5: {opcode: LDC2_W, constant value: 5.0}
+    8: {opcode: DCMPL}
+    9: {opcode: IFGT, target: 16}
+    12: {opcode: ICONST_0, constant value: 0}
+    13: {opcode: GOTO, target: 17}
+    16: {opcode: ICONST_1, constant value: 1}
+    17: {opcode: IFEQ, target: 45}
+    20: {opcode: NEW, type: NativeFunction}
+    23: {opcode: DUP}
+    24: {opcode: LDC, constant value: print}
+    26: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    29: {opcode: LDC, constant value: 1}
+    31: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    34: {opcode: DUP}
+    35: {opcode: ICONST_0, constant value: 0}
+    36: {opcode: LDC, constant value: x is greater than 5}
+    38: {opcode: AASTORE}
+    39: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    42: {opcode: GOTO, target: 45}
+    45: {opcode: DLOAD_1, slot: 1}
+    46: {opcode: LDC2_W, constant value: 5.0}
+    49: {opcode: DCMPL}
+    50: {opcode: IFLT, target: 57}
+    53: {opcode: ICONST_0, constant value: 0}
+    54: {opcode: GOTO, target: 58}
+    57: {opcode: ICONST_1, constant value: 1}
+    58: {opcode: IFEQ, target: 86}
+    61: {opcode: NEW, type: NativeFunction}
+    64: {opcode: DUP}
+    65: {opcode: LDC, constant value: print}
+    67: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    70: {opcode: LDC, constant value: 1}
+    72: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    75: {opcode: DUP}
+    76: {opcode: ICONST_0, constant value: 0}
+    77: {opcode: LDC, constant value: x is less than 5}
+    79: {opcode: AASTORE}
+    80: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    83: {opcode: GOTO, target: 108}
+    86: {opcode: NEW, type: NativeFunction}
+    89: {opcode: DUP}
+    90: {opcode: LDC, constant value: print}
+    92: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    95: {opcode: LDC, constant value: 1}
+    97: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    100: {opcode: DUP}
+    101: {opcode: ICONST_0, constant value: 0}
+    102: {opcode: LDC, constant value: x is not less than 5}
+    104: {opcode: AASTORE}
+    105: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    108: {opcode: DLOAD_1, slot: 1}
+    109: {opcode: LDC2_W, constant value: 0.0}
+    112: {opcode: DCMPL}
+    113: {opcode: IFGT, target: 120}
+    116: {opcode: ICONST_0, constant value: 0}
+    117: {opcode: GOTO, target: 121}
+    120: {opcode: ICONST_1, constant value: 1}
+    121: {opcode: IFEQ, target: 190}
+    124: {opcode: DLOAD_1, slot: 1}
+    125: {opcode: LDC2_W, constant value: 5.0}
+    128: {opcode: DCMPL}
+    129: {opcode: IFGT, target: 136}
+    132: {opcode: ICONST_0, constant value: 0}
+    133: {opcode: GOTO, target: 137}
+    136: {opcode: ICONST_1, constant value: 1}
+    137: {opcode: IFEQ, target: 165}
+    140: {opcode: NEW, type: NativeFunction}
+    143: {opcode: DUP}
+    144: {opcode: LDC, constant value: print}
+    146: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    149: {opcode: LDC, constant value: 1}
+    151: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    154: {opcode: DUP}
+    155: {opcode: ICONST_0, constant value: 0}
+    156: {opcode: LDC, constant value: x is positive and greater than 5}
+    158: {opcode: AASTORE}
+    159: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    162: {opcode: GOTO, target: 187}
+    165: {opcode: NEW, type: NativeFunction}
+    168: {opcode: DUP}
+    169: {opcode: LDC, constant value: print}
+    171: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    174: {opcode: LDC, constant value: 1}
+    176: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    179: {opcode: DUP}
+    180: {opcode: ICONST_0, constant value: 0}
+    181: {opcode: LDC, constant value: x is positive but not greater than 5}
+    183: {opcode: AASTORE}
+    184: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    187: {opcode: GOTO, target: 212}
+    190: {opcode: NEW, type: NativeFunction}
+    193: {opcode: DUP}
+    194: {opcode: LDC, constant value: print}
+    196: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    199: {opcode: LDC, constant value: 1}
+    201: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    204: {opcode: DUP}
+    205: {opcode: ICONST_0, constant value: 0}
+    206: {opcode: LDC, constant value: x is not positive}
+    208: {opcode: AASTORE}
+    209: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    212: {opcode: LDC2_W, constant value: 3.0}
+    215: {opcode: DSTORE_3, slot: 3}
+    216: {opcode: DLOAD_1, slot: 1}
+    217: {opcode: LDC2_W, constant value: 5.0}
+    220: {opcode: DCMPL}
+    221: {opcode: IFGT, target: 228}
+    224: {opcode: ICONST_0, constant value: 0}
+    225: {opcode: GOTO, target: 229}
+    228: {opcode: ICONST_1, constant value: 1}
+    229: {opcode: DLOAD_3, slot: 3}
+    230: {opcode: LDC2_W, constant value: 5.0}
+    233: {opcode: DCMPL}
+    234: {opcode: IFLT, target: 241}
+    237: {opcode: ICONST_0, constant value: 0}
+    238: {opcode: GOTO, target: 242}
+    241: {opcode: ICONST_1, constant value: 1}
+    242: {opcode: IAND}
+    243: {opcode: IFEQ, target: 271}
+    246: {opcode: NEW, type: NativeFunction}
+    249: {opcode: DUP}
+    250: {opcode: LDC, constant value: print}
+    252: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    255: {opcode: LDC, constant value: 1}
+    257: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    260: {opcode: DUP}
+    261: {opcode: ICONST_0, constant value: 0}
+    262: {opcode: LDC, constant value: Both conditions are true}
+    264: {opcode: AASTORE}
+    265: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    268: {opcode: GOTO, target: 271}
+    271: {opcode: ACONST_NULL, constant value: 'DynamicConstantDesc[ConstantBootstraps::nullConstant()Object]'}
+    272: {opcode: ARETURN}
+
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.generatorError(StackMapGenerator.java:850)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.generatorError(StackMapGenerator.java:835)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator$Frame.checkAssignableTo(StackMapGenerator.java:1137)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.checkJumpTarget(StackMapGenerator.java:283)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.processBlock(StackMapGenerator.java:636)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.processMethod(StackMapGenerator.java:454)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.generate(StackMapGenerator.java:303)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.<init>(StackMapGenerator.java:246)
+	at java.base/jdk.internal.classfile.impl.StackMapGenerator.of(StackMapGenerator.java:157)
+	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder$4.generateStackMaps(DirectCodeBuilder.java:341)
+	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder$4.tryGenerateStackMaps(DirectCodeBuilder.java:349)
+	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder$4.writeBody(DirectCodeBuilder.java:384)
+	at java.base/jdk.internal.classfile.impl.UnboundAttribute$AdHocAttribute.writeTo(UnboundAttribute.java:1099)
+	at java.base/jdk.internal.classfile.impl.Util.writeAttribute(Util.java:230)
+	at java.base/jdk.internal.classfile.impl.AttributeHolder.writeTo(AttributeHolder.java:71)
+	at java.base/jdk.internal.classfile.impl.DirectMethodBuilder.writeTo(DirectMethodBuilder.java:146)
+	at java.base/jdk.internal.classfile.impl.Util.writeList(Util.java:247)
+	at java.base/jdk.internal.classfile.impl.DirectClassBuilder.build(DirectClassBuilder.java:198)
+	at java.base/jdk.internal.classfile.impl.ClassFileImpl.build(ClassFileImpl.java:145)
+	at java.base/java.lang.classfile.ClassFile.build(ClassFile.java:558)
+	at java.base/java.lang.classfile.ClassFile.buildTo(ClassFile.java:587)
+	at me.vasan.jimple.Compiler.writeClass(Compiler.java:744)
+	at me.vasan.jimple.Compiler.compile(Compiler.java:90)
+	at me.vasan.jimple.Jimple.compile(Jimple.java:46)
+	at me.vasan.jimple.Jimple.compileFile(Jimple.java:168)
+	at me.vasan.jimple.Jimple.main(Jimple.java:272)

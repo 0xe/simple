@@ -68,7 +68,7 @@ public class Jimple {
                 decompileClassFile(classFileName);
             }
             
-            // Load and execute the compiled class
+            // Load and execute the compiled class using Callable interface
             try {
                 // Load the class file
                 Path classPath = Paths.get(classFileName);
@@ -86,16 +86,24 @@ public class Jimple {
                         }
                     };
                     
-                    // Load the class and invoke main method
+                    // Load the class and create an instance implementing Callable
                     Class<?> clazz = classLoader.loadClass(tempName);
-                    var mainMethod = clazz.getMethod("main", String[].class);
-                    mainMethod.invoke(null, (Object) new String[0]);
+                    Callable callable = (Callable) clazz.getDeclaredConstructor().newInstance();
+                    
+                    // Call the script and get the result
+                    Object result = callable.call();
+                    
+                    // Print the result if not null
+                    if (result != null) {
+                        System.out.println(result);
+                    }
                     
                     // Clean up the temporary class file
                     Files.deleteIfExists(classPath);
                 }
-            } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            } catch (Exception e) {
                 System.err.println("Error executing compiled code: " + e.getMessage());
+                e.printStackTrace();
             }
             
         } catch(Exception e) {
