@@ -37,11 +37,20 @@ echo
 
 # Compile the Simple language first
 echo "Compiling Simple language..."
-find src/main/java -name "*.java" -exec javac --enable-preview --source 25 -d . -cp src/main/java {} \; 2>/dev/null
+mvn compile -q
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}Simple language compiled successfully${NC}"
 else
     echo -e "${YELLOW}Some compilation warnings, continuing...${NC}"
+fi
+
+# Compile runtime support classes
+echo "Compiling runtime support classes..."
+javac --enable-preview --source 24 tests/*.java 2>/dev/null
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}Runtime classes compiled successfully${NC}"
+else
+    echo -e "${YELLOW}Some runtime compilation warnings, continuing...${NC}"
 fi
 echo
 
@@ -55,19 +64,19 @@ run_test() {
     
     # Run interpreter
     echo -n "[I]"
-    timeout 10s java --enable-preview me.vasan.jimple.Jimple -i "tests/$test_file" > "tests/${test_name}_interpreter_output.txt" 2>&1
+    timeout 10s java --enable-preview -cp target/classes me.vasan.jimple.Jimple -i "tests/$test_file" > "tests/${test_name}_interpreter_output.txt" 2>&1
     local interpreter_exit=$?
     
     # Run compiler 
     echo -n "[C]"
-    timeout 10s java --enable-preview me.vasan.jimple.Jimple "tests/$test_file" > "tests/${test_name}_compiler_log.txt" 2>&1
+    timeout 10s java --enable-preview -cp target/classes me.vasan.jimple.Jimple "tests/$test_file" > "tests/${test_name}_compiler_log.txt" 2>&1
     local compiler_exit=$?
     
     # If compilation succeeded, run the compiled program
     local compiled_exit=1
     if [ $compiler_exit -eq 0 ] && [ -f "tests/${test_name}.class" ]; then
         echo -n "[R]"
-        timeout 10s java -cp .:tests "${test_name}" > "tests/${test_name}_compiled_output.txt" 2>&1
+        timeout 10s java -cp target/classes:tests "${test_name}" > "tests/${test_name}_compiled_output.txt" 2>&1
         compiled_exit=$?
     else
         echo "Compilation failed" > "tests/${test_name}_compiled_output.txt"

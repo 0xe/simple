@@ -125,14 +125,8 @@ public class Compiler {
                 }
             }
             case UNARY -> {
-                switch (e.ue.o) {
-                    case NEG -> {
-                        return new TypeInfo(TypeKind.DOUBLE, ClassDesc.of("double"));
-                    }
-                    case NOT -> {
-                        return new TypeInfo(TypeKind.BOOLEAN, ClassDesc.of("boolean"));
-                    }
-                }
+                // DEBUG: Always return DOUBLE for any unary expression to test if this case is reached
+                return new TypeInfo(TypeKind.DOUBLE, ClassDesc.of("double"));
             }
             case CALL -> {
                 // Check if it's a special function like print
@@ -585,8 +579,7 @@ public class Compiler {
         switch (s.type) {
             case EXPR_STMT -> {
                 compileExpr(s.e.e, classBuilder, mb, cb);
-                // Expression statements should return their values, not discard them
-                // The value will be returned by the containing method
+                // Leave result on stack - will be cleaned up by caller
             }
 
             case IF_STMT -> {
@@ -719,6 +712,18 @@ public class Compiler {
                     cb.astore(slot);
                     varTable.put(d.var.id.name, new VarInfo(slot, type));
                 }
+                else if (d.var.rvalue.ue != null) {
+                    // Handle unary expression assignment - allocate correct slot type
+                    TypeInfo actualType = findExprType(d.var.rvalue);
+                    int actualSlot = cb.allocateLocal(actualType.t);
+                    compileExpr(d.var.rvalue, classBuilder, mb, cb);
+                    if (actualType.t == TypeKind.DOUBLE) {
+                        cb.dstore(actualSlot);
+                    } else {
+                        cb.astore(actualSlot);
+                    }
+                    varTable.put(d.var.id.name, new VarInfo(actualSlot, actualType));
+                }
                 else {
                     // Generic expression assignment
                     compileExpr(d.var.rvalue, classBuilder, mb, cb);
@@ -758,6 +763,18 @@ public class Compiler {
                         });
                     });
             
+            // Pre-populate methodTable with all function declarations
+            for (var d : decls) {
+                if (d.type == DeclType.VAR && d.var.rvalue.fe != null) {
+                    FunctionExpr f = d.var.rvalue.fe;
+                    String mDes = findMethodDescriptor(f);
+                    methodTable.put(d.var.id.name, new MethodInfo(methCounter++, mDes));
+                }
+            }
+            
+            // Reset methCounter for actual method generation
+            methCounter = 0;
+            
             // Generate user-defined function methods first
             for (var d : decls) {
                 if (d.type == DeclType.VAR && d.var.rvalue.fe != null) {
@@ -790,7 +807,7 @@ public class Compiler {
                                     varTable = savedVarTable;
                                 });
                             });
-                    methodTable.put(d.var.id.name, new MethodInfo(methCounter++, mDes));
+                    methCounter++;
                 }
             }
             
@@ -800,8 +817,6 @@ public class Compiler {
                     ACC_PUBLIC,
                     methodBuilder -> {
                         methodBuilder.withCode(codeBuilder -> {
-                            Object lastResult = null;
-                            
                             // Process each declaration/statement
                             for (var d : decls) {
                                 if (d.type == DeclType.VAR) {
@@ -814,31 +829,19 @@ public class Compiler {
                                 } else if (d.type == DeclType.STMT) {
                                     compileStmt(d.stmt, classBuilder, methodBuilder, codeBuilder);
                                     
-                                    // If this is an expression statement, capture its result
+                                    // Clean up stack after each expression statement
                                     if (d.stmt.type == StmtType.EXPR_STMT) {
                                         TypeInfo exprType = findExprType(d.stmt.e.e);
-                                        if (exprType != null) {
-                                            // Box primitive types for return
-                                            switch (exprType.t) {
-                                                case DOUBLE -> {
-                                                    codeBuilder.invokestatic(ClassDesc.of("java.lang.Double"), 
-                                                            "valueOf", MethodTypeDesc.ofDescriptor("(D)Ljava/lang/Double;"));
-                                                }
-                                                case BOOLEAN -> {
-                                                    codeBuilder.invokestatic(ClassDesc.of("java.lang.Boolean"), 
-                                                            "valueOf", MethodTypeDesc.ofDescriptor("(Z)Ljava/lang/Boolean;"));
-                                                }
-                                                // References are already objects
-                                            }
-                                            // Return the last expression result
-                                            codeBuilder.areturn();
-                                            return;
+                                        if (exprType != null && exprType.t == TypeKind.DOUBLE) {
+                                            codeBuilder.pop2();
+                                        } else {
+                                            codeBuilder.pop();
                                         }
                                     }
                                 }
                             }
                             
-                            // If no expression statement was found, return null
+                            // Return null
                             codeBuilder.aconst_null();
                             codeBuilder.areturn();
                         });

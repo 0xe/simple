@@ -20,7 +20,7 @@ public class InterpreterIntegrationTest {
         
         try {
             ProcessBuilder pb = new ProcessBuilder(
-                "java", "--enable-preview", "-cp", ".", 
+                "java", "--enable-preview", "-cp", "target/classes", 
                 "me.vasan.jimple.Jimple", "-i", tempFile
             );
             pb.directory(new File("."));

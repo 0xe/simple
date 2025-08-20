@@ -54,7 +54,7 @@ public class JimpleTestHarness {
         System.out.println("Running interpreter test: " + testName);
         
         ProcessBuilder pb = new ProcessBuilder(
-            "java", "--enable-preview", "-cp", ".", 
+            "java", "--enable-preview", "-cp", "target/classes", 
             "me.vasan.jimple.Jimple", "-i", testFilePath
         );
         pb.directory(new File("."));
@@ -92,7 +92,7 @@ public class JimpleTestHarness {
         
         // First compile the .sim file
         ProcessBuilder compilePb = new ProcessBuilder(
-            "java", "--enable-preview", "-cp", ".", 
+            "java", "--enable-preview", "-cp", "target/classes", 
             "me.vasan.jimple.Jimple", testFilePath
         );
         compilePb.directory(new File("."));
@@ -123,7 +123,7 @@ public class JimpleTestHarness {
         
         // Run the compiled program
         ProcessBuilder runPb = new ProcessBuilder(
-            "java", "-cp", ".:tests", testName
+            "java", "-cp", "target/classes:tests", testName
         );
         runPb.directory(new File("."));
         runPb.redirectErrorStream(true);

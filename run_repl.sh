@@ -4,13 +4,13 @@
 # This script compiles and runs the REPL
 
 echo "Compiling Simple REPL..."
-javac -cp . src/main/java/me/vasan/jimple/*.java
+javac --enable-preview --source 24 -d . -cp src/main/java src/main/java/me/vasan/jimple/*.java src/main/java/me/vasan/jimple/errors/*.java
 
 if [ $? -eq 0 ]; then
     echo "Starting Simple REPL..."
     echo "Use :help for available commands"
     echo ""
-    CLASSPATH=.:src/main/java:me java me.vasan.jimple.Jimple
+    java --enable-preview me.vasan.jimple.Jimple
 else
     echo "Compilation failed!"
     exit 1

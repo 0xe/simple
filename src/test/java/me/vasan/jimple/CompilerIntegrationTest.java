@@ -23,7 +23,7 @@ public class CompilerIntegrationTest {
         try {
             // Compile the .sim file
             ProcessBuilder compilePb = new ProcessBuilder(
-                "java", "--enable-preview", "-cp", "src/main/java:.", 
+                "java", "--enable-preview", "-cp", "target/classes", 
                 "me.vasan.jimple.Jimple", tempFile
             );
             compilePb.directory(new File("."));
@@ -49,7 +49,7 @@ public class CompilerIntegrationTest {
             }
             
             // Execute the compiled program
-            ProcessBuilder runPb = new ProcessBuilder("java", "--enable-preview", "-cp", ".:tests", className);
+            ProcessBuilder runPb = new ProcessBuilder("java", "--enable-preview", "-cp", "target/classes:tests", className);
             runPb.directory(new File("."));
             runPb.redirectErrorStream(true);
             

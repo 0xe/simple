@@ -330,7 +330,8 @@ public class Parser {
         Token t = peek();
         if (t.isUnary()) {
             advance();
-            return new Expr(new UnaryExpr(unary(), token_type_to_op(t.type)));
+            Op op = (t.type == TT.MINUS) ? Op.NEG : token_type_to_op(t.type);
+            return new Expr(new UnaryExpr(unary(), op));
         } else {
             return function();
         }
@@ -403,6 +404,11 @@ public class Parser {
             return parseObject();
         } else if (t.type == LEFT_BRACKET) {
             return parseArray();
+        } else if (t.type == LEFT_PAREN) {
+            advance(); // consume '('
+            Expr expr = parse_expr();
+            consume(RIGHT_PAREN); // consume ')'
+            return expr;
         } else {
             throw new SyntaxError("primary");
         }

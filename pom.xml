@@ -13,8 +13,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>25</maven.compiler.source>
-    <maven.compiler.target>25</maven.compiler.target>
+    <maven.compiler.source>24</maven.compiler.source>
+    <maven.compiler.target>24</maven.compiler.target>
   </properties>
 
   <dependencies>
@@ -39,7 +39,7 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.11.0</version>
           <configuration>
-            <release>25</release>
+            <release>24</release>
             <enablePreview>true</enablePreview>
           </configuration>
         </plugin>
@@ -50,7 +50,14 @@
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
+          <version>3.0.0-M9</version>
+          <configuration>
+            <argLine>--enable-preview</argLine>
+            <includes>
+              <include>**/*Test.java</include>
+              <include>**/*Tests.java</include>
+            </includes>
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
@@ -84,6 +91,17 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0-M9</version>
+        <configuration>
+          <argLine>--enable-preview</argLine>
+          <includes>
+            <include>**/*Test.java</include>
+            <include>**/*Tests.java</include>
+          </includes>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
