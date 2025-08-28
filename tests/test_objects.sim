@@ -1,0 +1,29 @@
+// Test object creation and property access
+let person = {name: "Alice", age: 30};
+
+print("Name: ", person.name);
+print("Age: ", person.age);
+
+// Test object with mixed types
+let mixed = {
+    number: 42,
+    string: "hello",
+    boolean: true
+};
+
+print("Number property: ", mixed.number);
+print("String property: ", mixed.string);
+print("Boolean property: ", mixed.boolean);
+
+// Test nested objects
+let company = {
+    name: "Tech Corp",
+    ceo: {
+        name: "Bob",
+        age: 45
+    }
+};
+
+print("Company: ", company.name);
+print("CEO: ", company.ceo.name);
+print("CEO Age: ", company.ceo.age);

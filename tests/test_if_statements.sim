@@ -1,0 +1,29 @@
+// Test if statements
+let x = 10;
+
+if (x > 5) {
+    print("x is greater than 5");
+}
+
+if (x < 5) {
+    print("x is less than 5");
+} else {
+    print("x is not less than 5");
+}
+
+// Test nested if
+if (x > 0) {
+    if (x > 5) {
+        print("x is positive and greater than 5");
+    } else {
+        print("x is positive but not greater than 5");
+    }
+} else {
+    print("x is not positive");
+}
+
+// Test if with complex conditions
+let y = 3;
+if (x > 5 && y < 5) {
+    print("Both conditions are true");
+}

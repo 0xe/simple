@@ -1,0 +1,8 @@
+From inner: global variable
+From inner: outer function variable
+Result: inner result
+Parameter: original value modified
+Local: local var
+Original unchanged: original value
+Modified: original value modified
+nil

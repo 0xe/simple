@@ -1,0 +1,15 @@
+// Test empty array
+let empty = [];
+print(empty);
+
+// Test array with elements
+let numbers = [1, 2, 3, 4, 5];
+print(numbers);
+
+// Test mixed-type array  
+let mixed = [42, "hello", true, nil];
+print(mixed);
+
+// Test nested array
+let nested = [1, [2, 3], [4, [5, 6]]];
+print(nested);

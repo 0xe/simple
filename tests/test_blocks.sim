@@ -1,0 +1,24 @@
+// Test block scoping
+let outer = "outer variable";
+
+print("Before block: ", outer);
+
+{
+    let inner = "inner variable";
+    let outer = "shadowed outer";  // shadows outer variable
+    
+    print("In block - outer: ", outer);
+    print("In block - inner: ", inner);
+}
+
+print("After block: ", outer);
+
+// Test nested blocks
+{
+    let level1 = "level 1";
+    {
+        let level2 = "level 2";
+        print("Nested block - level1: ", level1);
+        print("Nested block - level2: ", level2);
+    }
+}

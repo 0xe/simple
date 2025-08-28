@@ -1,0 +1,14 @@
+Initial value: 10.0
+Exception in thread "main" java.lang.RuntimeException: Error calling function: null
+	at me.vasan.jimple.RuntimeFunction.call(RuntimeFunction.java:28)
+	at test_object_methods.call(Unknown Source)
+	at test_object_methods.main(Unknown Source)
+Caused by: java.lang.reflect.InvocationTargetException
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:116)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at me.vasan.jimple.RuntimeFunction.call(RuntimeFunction.java:22)
+	... 2 more
+Caused by: java.lang.NullPointerException: Cannot invoke "me.vasan.jimple.SimpleObject.get(String)" because "null" is null
+	at test_object_methods.funcExpr0(Unknown Source)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	... 4 more

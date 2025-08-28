@@ -1,0 +1,17 @@
+// Test variable declarations and assignments
+let x = 42;
+let y = 3.14;
+let name = "Simple Language";
+let flag = true;
+
+print("Number: ", x);
+print("Float: ", y);
+print("String: ", name);
+print("Boolean: ", flag);
+
+// Test variable reassignment
+x = x + 10;
+flag = false;
+
+print("Updated number: ", x);
+print("Updated boolean: ", flag);

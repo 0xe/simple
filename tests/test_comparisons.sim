@@ -1,0 +1,18 @@
+// Test comparison operations
+let a = 10;
+let b = 5;
+
+print("10 == 5: ", a == b);
+print("10 != 5: ", a != b);
+print("10 > 5: ", a > b);
+print("10 >= 5: ", a >= b);
+print("10 < 5: ", a < b);
+print("10 <= 5: ", a <= b);
+
+// Test boolean operations
+let t = true;
+let f = false;
+
+print("true && false: ", t && f);
+print("true || false: ", t || f);
+print("!true: ", !t);

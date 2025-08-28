@@ -1,0 +1,21 @@
+// Test basic arithmetic operations
+let a = 10;
+let b = 5;
+
+let sum = a + b;
+let diff = a - b;
+let prod = a * b;
+let quot = a / b;
+
+print("Sum: ", sum);
+print("Diff: ", diff);
+print("Product: ", prod);
+print("Quotient: ", quot);
+
+// Test unary operations
+let neg = -a;
+print("Negative: ", neg);
+
+// Test compound expressions
+let complex = (a + b) * (a - b);
+print("Complex: ", complex);
