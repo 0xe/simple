@@ -237,21 +237,24 @@ public class Parser {
     }
 
     Expr assign_expr() throws SyntaxError, EofReached {
-        Token t = peek();
-        if (t.type == TT.IDENTIFIER) {
-            advance(); Token t_ = peek();
-            if (t_.type == TT.EQUAL) {
-                advance();
-                return new Expr(
-                    new AssignExpr(
-                        new Id(t.lexeme, t.line, t.charPos),
-                        assign_expr()));
+        Expr left = logic_or();
+        
+        if (match(EQUAL)) {
+            Expr right = assign_expr();
+            
+            // Check if left side is assignable
+            if (left.type == ExprType.PRIMARY && left.pe.type == PrimaryType.ID) {
+                // Simple variable assignment: id = value
+                return new Expr(new AssignExpr(left.pe.id, right));
+            } else if (left.type == ExprType.PROPERTY_ACCESS) {
+                // Property assignment: obj.prop = value
+                return new Expr(new PropertyAssignExpr(left.pae.object, left.pae.property, right));
             } else {
-                rollback(); // function calls
-                return logic_or();
+                throw new SyntaxError("Invalid assignment target");
             }
         }
-        return logic_or();
+        
+        return left;
     }
 
     Expr logic_or() throws SyntaxError, EofReached {
@@ -372,9 +375,15 @@ public class Parser {
                 consume(RIGHT_PAREN);
                 
                 if (expr.type == ExprType.PRIMARY && expr.pe.type == PrimaryType.ID) {
+                    // Simple function call: func()
                     expr = new Expr(new CallExpr(expr.pe.id, args));
+                } else if (expr.type == ExprType.PROPERTY_ACCESS) {
+                    // Method call: obj.method()  
+                    Id methodId = new Id(expr.pae.property, 0, 0); // Use dummy line/col
+                    CallExpr methodCall = new CallExpr(methodId, args, expr.pae.object);
+                    expr = new Expr(methodCall);
                 } else {
-                    throw new SyntaxError("Can only call functions");
+                    throw new SyntaxError("Can only call functions or methods");
                 }
             } else if (match(DOT)) {
                 Token propertyToken = peek();

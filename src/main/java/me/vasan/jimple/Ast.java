@@ -12,7 +12,7 @@ enum StmtType {
 };
 
 enum ExprType {
-    ASSIGN_EXPR, BINARY_EXPR, UNARY, FUNCTION, CALL, PRIMARY, OBJECT, ARRAY, PROPERTY_ACCESS, INDEX_ACCESS
+    ASSIGN_EXPR, BINARY_EXPR, UNARY, FUNCTION, CALL, PRIMARY, OBJECT, ARRAY, PROPERTY_ACCESS, INDEX_ACCESS, PROPERTY_ASSIGN
 };
 
 enum PrimaryType {ID, NUM, STR, B, NIL};
@@ -246,6 +246,7 @@ class Expr extends Node {
     ArrayExpr ae;
     PropertyAccessExpr pae;
     IndexAccessExpr iae;
+    PropertyAssignExpr pas;
 
     ExprType type;
 
@@ -292,6 +293,10 @@ class Expr extends Node {
     Expr(IndexAccessExpr e) {
         this.iae = e; this.type = ExprType.INDEX_ACCESS;
     }
+
+    Expr(PropertyAssignExpr e) {
+        this.pas = e; this.type = ExprType.PROPERTY_ASSIGN;
+    }
 }
 
 class AssignExpr {
@@ -337,9 +342,14 @@ class FunctionExpr {
 class CallExpr {
     Id id;
     ArrayList<Expr> a;
+    Expr object; // For method calls like obj.method(), this stores the object
 
     CallExpr(Id id, ArrayList<Expr> a) {
         this.id = id; this.a = a;
+    }
+    
+    CallExpr(Id id, ArrayList<Expr> a, Expr object) {
+        this.id = id; this.a = a; this.object = object;
     }
 }
 
@@ -451,5 +461,21 @@ class PropertyAccessExpr {
 
     public String toString() {
         return String.format("<PropertyAccess> %s.%s", object.toString(), property);
+    }
+}
+
+class PropertyAssignExpr {
+    Expr object;
+    String property;
+    Expr value;
+
+    PropertyAssignExpr(Expr object, String property, Expr value) {
+        this.object = object;
+        this.property = property;
+        this.value = value;
+    }
+
+    public String toString() {
+        return String.format("<PropertyAssign> %s.%s = %s", object.toString(), property, value.toString());
     }
 }

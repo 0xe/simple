@@ -32,6 +32,10 @@ public class Compiler {
 
     // This thing is lisp-2 after all
     HashMap<String, MethodInfo> methodTable = null;
+    
+    // Track function expressions for method generation
+    ArrayList<FunctionExpr> functionExpressions = new ArrayList<>();
+    int functionExprCounter = 0;
 
     /* this should be per method as slots _WILL_ be reused! */
     HashMap<String, VarInfo> varTable = null;
@@ -185,6 +189,11 @@ public class Compiler {
             case INDEX_ACCESS -> {
                 return new TypeInfo(TypeKind.REFERENCE, ClassDesc.of("java.lang", "Object"));
             }
+            case PROPERTY_ASSIGN -> {
+                // Property assignment returns the assigned value, but since it gets boxed 
+                // in the bytecode, it's always an Object reference
+                return new TypeInfo(TypeKind.REFERENCE, ClassDesc.of("java.lang", "Object"));
+            }
         }
         return new TypeInfo(TypeKind.REFERENCE, ClassDesc.of("java.lang", "Object")); // default
     }
@@ -202,8 +211,89 @@ public class Compiler {
         descriptor.append(")Ljava/lang/Object;"); // Return Object
         return descriptor.toString();
     }
+    
+    private void compileMethodCall(Var v, CallExpr ce, ClassBuilder classBuilder, MethodBuilder mb, CodeBuilder cb) {
+        // Method call: obj.method(args) 
+        // This is compiled as: obj.method.call([args])
+        
+        // Get the function object from the property
+        compileExpr(ce.object, classBuilder, mb, cb); // Push object
+        
+        // Cast to SimpleObject if needed (similar to property access)
+        TypeInfo objType = findExprType(ce.object);
+        if (objType.t == TypeKind.REFERENCE && !objType.c.equals(ClassDesc.of("me.vasan.jimple", "SimpleObject"))) {
+            cb.checkcast(ClassDesc.of("me.vasan.jimple.SimpleObject"));
+        }
+        
+        cb.ldc(ce.id.name); // Push method name
+        
+        // Call SimpleObject.get(String) to get the function object
+        cb.invokevirtual(ClassDesc.of("me.vasan.jimple.SimpleObject"),
+                "get",
+                MethodTypeDesc.ofDescriptor("(Ljava/lang/String;)Ljava/lang/Object;"));
+        
+        // Now we have the function object on the stack
+        // Create arguments array and call the function using the same pattern as print()
+        cb.ldc(ce.a.size()); // Push argument count
+        cb.anewarray(ClassDesc.of("java.lang.Object"));
+        
+        for (var ai : ce.a) {
+            cb.dup();
+            switch (ce.a.indexOf(ai)) {
+                case 0 -> cb.iconst_0();
+                case 1 -> cb.iconst_1();
+                case 2 -> cb.iconst_2();
+                case 3 -> cb.iconst_3();
+                case 4 -> cb.iconst_4();
+                case 5 -> cb.iconst_5();
+                default -> cb.ldc(ce.a.indexOf(ai));
+            }
+            
+            compileExpr(ai, classBuilder, mb, cb);
+            
+            // Box primitive types
+            TypeInfo argType = findExprType(ai);
+            if (argType != null) {
+                switch (argType.t) {
+                    case DOUBLE -> {
+                        cb.invokestatic(ClassDesc.of("java.lang.Double"), 
+                                "valueOf", MethodTypeDesc.ofDescriptor("(D)Ljava/lang/Double;"));
+                    }
+                    case BOOLEAN -> {
+                        cb.invokestatic(ClassDesc.of("java.lang.Boolean"), 
+                                "valueOf", MethodTypeDesc.ofDescriptor("(Z)Ljava/lang/Boolean;"));
+                    }
+                }
+            }
+            
+            cb.aastore();
+        }
+        
+        // Call the function object - cast to RuntimeFunction and call its call method  
+        // At this point stack is: [function_object, args_array]
+        // We need: [RuntimeFunction, args_array] for the method call
+        cb.swap(); // Now stack is: [args_array, function_object]
+        cb.checkcast(ClassDesc.of("me.vasan.jimple.RuntimeFunction")); // [args_array, RuntimeFunction]
+        cb.swap(); // Now stack is: [RuntimeFunction, args_array]
+        cb.invokevirtual(ClassDesc.of("me.vasan.jimple.RuntimeFunction"),
+                "call",
+                MethodTypeDesc.ofDescriptor("([Ljava/lang/Object;)Ljava/lang/Object;"));
+        
+        // Store result if this is an assignment
+        if (v != null) {
+            int slot = cb.allocateLocal(TypeKind.REFERENCE);
+            cb.astore(slot);
+            varTable.put(v.id.name, new VarInfo(slot, new TypeInfo(TypeKind.REFERENCE, ClassDesc.of("java.lang", "Object"))));
+        }
+    }
 
     private void compileCallExpr(Var v, CallExpr ce, ClassBuilder classBuilder, MethodBuilder mb, CodeBuilder cb) {
+        // Check if this is a method call (obj.method())
+        if (ce.object != null) {
+            compileMethodCall(v, ce, classBuilder, mb, cb);
+            return;
+        }
+        
         MethodInfo m = methodTable.get(ce.id.name);
         if (m != null) {
             // Load 'this' first for instance method call
@@ -505,7 +595,18 @@ public class Compiler {
                 compileCallExpr(null, e.ce, classBuilder, mb, cb);
             }
             case FUNCTION -> {
-                // Function expressions are handled during declaration
+                // Add this function expression to the list for method generation
+                functionExpressions.add(e.fe);
+                String methodName = "funcExpr" + functionExprCounter++;
+                
+                // Create RuntimeFunction object that references the generated method
+                cb.new_(ClassDesc.of("me.vasan.jimple.RuntimeFunction"));
+                cb.dup();
+                cb.aload(0); // Pass 'this' as the instance
+                cb.ldc(methodName); // Method name for this function expression
+                cb.invokespecial(ClassDesc.of("me.vasan.jimple.RuntimeFunction"),
+                        "<init>",
+                        MethodTypeDesc.ofDescriptor("(Ljava/lang/Object;Ljava/lang/String;)V"));
             }
             case PRIMARY -> {
                 switch (e.pe.type) {
@@ -620,6 +721,14 @@ public class Compiler {
                 // Compile object expression
                 compileExpr(e.pae.object, classBuilder, mb, cb);
                 
+                // If the object expression is not a direct variable reference, 
+                // we need to cast it to SimpleObject (for chained access like obj.prop.prop2)
+                TypeInfo objType = findExprType(e.pae.object);
+                if (objType.t == TypeKind.REFERENCE && !objType.c.equals(ClassDesc.of("me.vasan.jimple", "SimpleObject"))) {
+                    // Cast Object back to SimpleObject
+                    cb.checkcast(ClassDesc.of("me.vasan.jimple.SimpleObject"));
+                }
+                
                 // Push property name
                 cb.ldc(e.pae.property);
                 
@@ -645,6 +754,47 @@ public class Compiler {
                 cb.invokevirtual(ClassDesc.of("me.vasan.jimple.SimpleArray"),
                         "get", 
                         MethodTypeDesc.ofDescriptor("(I)Ljava/lang/Object;"));
+            }
+            case PROPERTY_ASSIGN -> {
+                // Compile object expression
+                compileExpr(e.pas.object, classBuilder, mb, cb);
+                
+                // Push property name
+                cb.ldc(e.pas.property);
+                
+                // Compile value expression
+                compileExpr(e.pas.value, classBuilder, mb, cb);
+                
+                // Box primitive types if needed
+                TypeInfo valueType = findExprType(e.pas.value);
+                switch (valueType.t) {
+                    case DOUBLE -> {
+                        cb.invokestatic(ClassDesc.of("java.lang.Double"), "valueOf", 
+                                MethodTypeDesc.ofDescriptor("(D)Ljava/lang/Double;"));
+                    }
+                    case BOOLEAN -> {
+                        cb.invokestatic(ClassDesc.of("java.lang.Boolean"), "valueOf", 
+                                MethodTypeDesc.ofDescriptor("(Z)Ljava/lang/Boolean;"));
+                    }
+                }
+                
+                // Current stack: [obj, property, value]
+                // Need: set(obj, property, value) and return value
+                // Simple approach: duplicate value and use temporary storage
+                
+                cb.dup(); // [obj, property, value, value]
+                
+                // Store copy of value for later return
+                int tempSlot = 10; // Use a high slot number to avoid conflicts  
+                cb.astore(tempSlot); // [obj, property, value]
+                
+                // Call set() which consumes [obj, property, value] and returns void
+                cb.invokevirtual(ClassDesc.of("me.vasan.jimple.SimpleObject"),
+                        "set",
+                        MethodTypeDesc.ofDescriptor("(Ljava/lang/String;Ljava/lang/Object;)V"));
+                
+                // Stack is now empty, load the stored value as expression result
+                cb.aload(tempSlot); // [value]
             }
         }
     }
@@ -819,6 +969,114 @@ public class Compiler {
         }
     }
 
+    private void collectFunctionExpressions(Decl d) {
+        if (d.type == DeclType.VAR && d.var.rvalue != null) {
+            collectFunctionExpressionsFromExpr(d.var.rvalue);
+        } else if (d.type == DeclType.STMT && d.stmt != null) {
+            collectFunctionExpressionsFromStmt(d.stmt);
+        }
+    }
+    
+    private void collectFunctionExpressionsFromExpr(Expr e) {
+        if (e == null) return;
+        
+        switch (e.type) {
+            case FUNCTION -> {
+                functionExpressions.add(e.fe);
+            }
+            case ASSIGN_EXPR -> {
+                if (e.a != null) {
+                    collectFunctionExpressionsFromExpr(e.a.e);
+                }
+            }
+            case BINARY_EXPR -> {
+                if (e.b != null) {
+                    collectFunctionExpressionsFromExpr(e.b.lhs);
+                    collectFunctionExpressionsFromExpr(e.b.rhs);
+                }
+            }
+            case UNARY -> {
+                if (e.ue != null) {
+                    collectFunctionExpressionsFromExpr(e.ue.e);
+                }
+            }
+            case CALL -> {
+                if (e.ce != null) {
+                    collectFunctionExpressionsFromExpr(e.ce.object);
+                    for (Expr arg : e.ce.a) {
+                        collectFunctionExpressionsFromExpr(arg);
+                    }
+                }
+            }
+            case OBJECT -> {
+                if (e.oe != null) {
+                    for (Expr value : e.oe.values) {
+                        collectFunctionExpressionsFromExpr(value);
+                    }
+                }
+            }
+            case ARRAY -> {
+                if (e.ae != null) {
+                    for (Expr elem : e.ae.elements) {
+                        collectFunctionExpressionsFromExpr(elem);
+                    }
+                }
+            }
+            case PROPERTY_ACCESS -> {
+                if (e.pae != null) {
+                    collectFunctionExpressionsFromExpr(e.pae.object);
+                }
+            }
+            case INDEX_ACCESS -> {
+                if (e.iae != null) {
+                    collectFunctionExpressionsFromExpr(e.iae.object);
+                    collectFunctionExpressionsFromExpr(e.iae.index);
+                }
+            }
+            case PROPERTY_ASSIGN -> {
+                if (e.pas != null) {
+                    collectFunctionExpressionsFromExpr(e.pas.object);
+                    collectFunctionExpressionsFromExpr(e.pas.value);
+                }
+            }
+        }
+    }
+    
+    private void collectFunctionExpressionsFromStmt(Stmt s) {
+        if (s == null) return;
+        
+        switch (s.type) {
+            case EXPR_STMT -> {
+                collectFunctionExpressionsFromExpr(s.e.e);
+            }
+            case BLOCK_STMT -> {
+                if (s.b != null) {
+                    for (Decl d : s.b.decls) {
+                        collectFunctionExpressions(d);
+                    }
+                }
+            }
+            case IF_STMT -> {
+                if (s.i != null) {
+                    collectFunctionExpressionsFromExpr(s.i.cond);
+                    collectFunctionExpressionsFromStmt(s.i.then);
+                    collectFunctionExpressionsFromStmt(s.i.alt);
+                }
+            }
+            case WHILE_STMT -> {
+                if (s.w != null) {
+                    collectFunctionExpressionsFromExpr(s.w.cond);
+                    collectFunctionExpressionsFromStmt(s.w.then);
+                }
+            }
+            case RETURN_STMT -> {
+                if (s.r != null) {
+                    collectFunctionExpressionsFromExpr(s.r.expr);
+                }
+            }
+        }
+    }
+
     private void writeClass(List<Decl> decls) throws IOException {
         fPgmClassFile.buildTo(Path.of(fPath.split("\\.sim")[0] + ".class"), fPgmClass, classBuilder -> {
             // Implement Callable interface
@@ -883,6 +1141,46 @@ public class Compiler {
                             });
                     methCounter++;
                 }
+            }
+            
+            // First pass: collect function expressions by processing declarations
+            for (var d : decls) {
+                collectFunctionExpressions(d);
+            }
+            
+            // Generate methods for function expressions
+            for (int i = 0; i < functionExpressions.size(); i++) {
+                FunctionExpr f = functionExpressions.get(i);
+                String methodName = "funcExpr" + i;
+                String mDes = findMethodDescriptor(f);
+                
+                classBuilder.withMethod(methodName,
+                        MethodTypeDesc.ofDescriptor(mDes),
+                        ACC_PUBLIC,
+                        mB -> {
+                            mB.withCode(cb2 -> {
+                                // Create new variable scope for function
+                                HashMap<String, VarInfo> savedVarTable = new HashMap<>(varTable);
+                                
+                                // Map function parameters to local variables
+                                // Slot 0 is 'this', parameters start at slot 1
+                                for (int j = 0; j < f.a.size(); j++) {
+                                    String paramName = f.a.get(j).name;
+                                    // Object parameters take 1 slot each: slot 1, 2, 3, etc.
+                                    varTable.put(paramName, new VarInfo(1 + j, new TypeInfo(TypeKind.REFERENCE, ClassDesc.of("java.lang", "Object"))));
+                                }
+                                
+                                // Compile function body
+                                compileStmt(f.b, classBuilder, mB, cb2);
+                                
+                                // If no explicit return, return null
+                                cb2.aconst_null();
+                                cb2.areturn();
+                                
+                                // Restore variable scope
+                                varTable = savedVarTable;
+                            });
+                        });
             }
             
             // Generate call() method - implements Callable interface
