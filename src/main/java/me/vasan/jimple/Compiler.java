@@ -125,7 +125,15 @@ public class Compiler {
                 }
             }
             case UNARY -> {
-                // DEBUG: Always return DOUBLE for any unary expression to test if this case is reached
+                // Return appropriate type based on unary operation
+                switch (e.ue.o) {
+                    case NOT -> {
+                        return new TypeInfo(TypeKind.BOOLEAN, ClassDesc.of("boolean"));
+                    }
+                    case NEG -> {
+                        return new TypeInfo(TypeKind.DOUBLE, ClassDesc.of("double"));
+                    }
+                }
                 return new TypeInfo(TypeKind.DOUBLE, ClassDesc.of("double"));
             }
             case CALL -> {
@@ -407,12 +415,70 @@ public class Compiler {
                         cb.labelBinding(endLabel);
                     }
                     case LOR -> {
-                        // TODO: Implement logical OR
-                        cb.ior(); // Placeholder - needs proper boolean handling
+                        // Logical OR: result = (lhs != 0) || (rhs != 0) ? 1 : 0
+                        // Stack before: [lhs, rhs]
+                        
+                        // Simple approach: use bitwise OR on the boolean values
+                        // Convert non-zero values to 1, zero values to 0, then OR them
+                        
+                        // Handle rhs: convert to 0 or 1
+                        var rhs_nonzero = cb.newLabel();
+                        var rhs_done = cb.newLabel();
+                        cb.ifne(rhs_nonzero);    // if rhs != 0, jump
+                        cb.iconst_0();           // rhs was 0, push 0
+                        cb.goto_(rhs_done);
+                        cb.labelBinding(rhs_nonzero);
+                        cb.iconst_1();           // rhs was non-zero, push 1
+                        cb.labelBinding(rhs_done);
+                        // Stack now: [lhs, rhs_bool] where rhs_bool is 0 or 1
+                        
+                        // Handle lhs: convert to 0 or 1
+                        cb.swap();               // Stack: [rhs_bool, lhs]
+                        var lhs_nonzero = cb.newLabel();
+                        var lhs_done = cb.newLabel();
+                        cb.ifne(lhs_nonzero);    // if lhs != 0, jump
+                        cb.iconst_0();           // lhs was 0, push 0
+                        cb.goto_(lhs_done);
+                        cb.labelBinding(lhs_nonzero);
+                        cb.iconst_1();           // lhs was non-zero, push 1
+                        cb.labelBinding(lhs_done);
+                        // Stack now: [rhs_bool, lhs_bool] where both are 0 or 1
+                        
+                        // Now do bitwise OR
+                        cb.ior();
                     }
                     case LAN -> {
-                        // TODO: Implement logical AND  
-                        cb.iand(); // Placeholder - needs proper boolean handling
+                        // Logical AND: result = (lhs != 0) && (rhs != 0) ? 1 : 0
+                        // Stack before: [lhs, rhs]
+                        
+                        // Simple approach: use bitwise AND on the boolean values
+                        // Convert non-zero values to 1, zero values to 0, then AND them
+                        
+                        // Handle rhs: convert to 0 or 1
+                        var rhs_nonzero = cb.newLabel();
+                        var rhs_done = cb.newLabel();
+                        cb.ifne(rhs_nonzero);    // if rhs != 0, jump
+                        cb.iconst_0();           // rhs was 0, push 0
+                        cb.goto_(rhs_done);
+                        cb.labelBinding(rhs_nonzero);
+                        cb.iconst_1();           // rhs was non-zero, push 1
+                        cb.labelBinding(rhs_done);
+                        // Stack now: [lhs, rhs_bool] where rhs_bool is 0 or 1
+                        
+                        // Handle lhs: convert to 0 or 1
+                        cb.swap();               // Stack: [rhs_bool, lhs]
+                        var lhs_nonzero = cb.newLabel();
+                        var lhs_done = cb.newLabel();
+                        cb.ifne(lhs_nonzero);    // if lhs != 0, jump
+                        cb.iconst_0();           // lhs was 0, push 0
+                        cb.goto_(lhs_done);
+                        cb.labelBinding(lhs_nonzero);
+                        cb.iconst_1();           // lhs was non-zero, push 1
+                        cb.labelBinding(lhs_done);
+                        // Stack now: [rhs_bool, lhs_bool] where both are 0 or 1
+                        
+                        // Now do bitwise AND
+                        cb.iand();
                     }
                 }
             }
@@ -423,7 +489,15 @@ public class Compiler {
                         cb.dneg();
                     }
                     case NOT -> {
-                        // TODO: Implement boolean NOT
+                        // Implement boolean NOT: if value is 0, push 1; if non-zero, push 0
+                        var trueLabel = cb.newLabel();
+                        var endLabel = cb.newLabel();
+                        cb.ifeq(trueLabel);   // Jump to true if value is 0 (false)
+                        cb.iconst_0();        // Value was non-zero, so push 0 (false)
+                        cb.goto_(endLabel);
+                        cb.labelBinding(trueLabel);
+                        cb.iconst_1();        // Value was 0, so push 1 (true)
+                        cb.labelBinding(endLabel);
                     }
                 }
             }
