@@ -819,12 +819,30 @@ public class Compiler {
                 
                 // Compile then branch
                 compileStmt(s.i.then, classBuilder, mb, cb);
+                // Pop result only for expression statements that leave values
+                if (s.i.then.type == StmtType.EXPR_STMT) {
+                    TypeInfo exprType = findExprType(s.i.then.e.e);
+                    if (exprType != null && exprType.t == TypeKind.DOUBLE) {
+                        cb.pop2();
+                    } else {
+                        cb.pop();
+                    }
+                }
                 cb.goto_(endLabel);
                 
                 // Compile else branch (if exists)
                 cb.labelBinding(elseLabel);
                 if (s.i.alt != null) {
                     compileStmt(s.i.alt, classBuilder, mb, cb);
+                    // Pop result only for expression statements that leave values
+                    if (s.i.alt.type == StmtType.EXPR_STMT) {
+                        TypeInfo exprType = findExprType(s.i.alt.e.e);
+                        if (exprType != null && exprType.t == TypeKind.DOUBLE) {
+                            cb.pop2();
+                        } else {
+                            cb.pop();
+                        }
+                    }
                 }
                 
                 cb.labelBinding(endLabel);
@@ -843,8 +861,18 @@ public class Compiler {
                 // Exit loop if condition is false
                 cb.ifeq(endLabel);
                 
-                // Compile loop body
+                // Compile loop body  
                 compileStmt(s.w.then, classBuilder, mb, cb);
+                // Pop result only for expression statements that leave values
+                if (s.w.then.type == StmtType.EXPR_STMT) {
+                    // Determine if we need POP or POP2 based on expression type
+                    TypeInfo exprType = findExprType(s.w.then.e.e);
+                    if (exprType != null && exprType.t == TypeKind.DOUBLE) {
+                        cb.pop2();
+                    } else {
+                        cb.pop();
+                    }
+                }
                 
                 // Jump back to start
                 cb.goto_(startLabel);
@@ -886,6 +914,16 @@ public class Compiler {
                 // Compile declarations in block
                 for (Decl decl : s.b.decls) {
                     compileDeclaration(decl, classBuilder, mb, cb);
+                    
+                    // Clean up stack after each expression statement (similar to main call() method)
+                    if (decl.type == DeclType.STMT && decl.stmt.type == StmtType.EXPR_STMT) {
+                        TypeInfo exprType = findExprType(decl.stmt.e.e);
+                        if (exprType != null && exprType.t == TypeKind.DOUBLE) {
+                            cb.pop2();
+                        } else {
+                            cb.pop();
+                        }
+                    }
                 }
                 
                 // Restore variable scope
