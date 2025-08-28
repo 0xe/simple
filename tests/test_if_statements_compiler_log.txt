@@ -123,22 +123,31 @@ java.lang.IllegalArgumentException: Stack size mismatch at bytecode offset 42 of
     237: {opcode: ICONST_0, constant value: 0}
     238: {opcode: GOTO, target: 242}
     241: {opcode: ICONST_1, constant value: 1}
-    242: {opcode: IAND}
-    243: {opcode: IFEQ, target: 271}
-    246: {opcode: NEW, type: NativeFunction}
-    249: {opcode: DUP}
-    250: {opcode: LDC, constant value: print}
-    252: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
-    255: {opcode: LDC, constant value: 1}
-    257: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
-    260: {opcode: DUP}
-    261: {opcode: ICONST_0, constant value: 0}
-    262: {opcode: LDC, constant value: Both conditions are true}
-    264: {opcode: AASTORE}
-    265: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
-    268: {opcode: GOTO, target: 271}
-    271: {opcode: ACONST_NULL, constant value: 'DynamicConstantDesc[ConstantBootstraps::nullConstant()Object]'}
-    272: {opcode: ARETURN}
+    242: {opcode: IFNE, target: 249}
+    245: {opcode: ICONST_0, constant value: 0}
+    246: {opcode: GOTO, target: 250}
+    249: {opcode: ICONST_1, constant value: 1}
+    250: {opcode: SWAP}
+    251: {opcode: IFNE, target: 258}
+    254: {opcode: ICONST_0, constant value: 0}
+    255: {opcode: GOTO, target: 259}
+    258: {opcode: ICONST_1, constant value: 1}
+    259: {opcode: IAND}
+    260: {opcode: IFEQ, target: 288}
+    263: {opcode: NEW, type: NativeFunction}
+    266: {opcode: DUP}
+    267: {opcode: LDC, constant value: print}
+    269: {opcode: INVOKESPECIAL, owner: NativeFunction, method name: <init>, method type: (Ljava/lang/String;)V}
+    272: {opcode: LDC, constant value: 1}
+    274: {opcode: ANEWARRAY, dimensions: 1, descriptor: java/lang/Object}
+    277: {opcode: DUP}
+    278: {opcode: ICONST_0, constant value: 0}
+    279: {opcode: LDC, constant value: Both conditions are true}
+    281: {opcode: AASTORE}
+    282: {opcode: INVOKEVIRTUAL, owner: NativeFunction, method name: call, method type: '([Ljava/lang/Object;)Ljava/lang/Object;'}
+    285: {opcode: GOTO, target: 288}
+    288: {opcode: ACONST_NULL, constant value: 'DynamicConstantDesc[ConstantBootstraps::nullConstant()Object]'}
+    289: {opcode: ARETURN}
 
 	at java.base/jdk.internal.classfile.impl.StackMapGenerator.generatorError(StackMapGenerator.java:850)
 	at java.base/jdk.internal.classfile.impl.StackMapGenerator.generatorError(StackMapGenerator.java:835)
@@ -149,19 +158,19 @@ java.lang.IllegalArgumentException: Stack size mismatch at bytecode offset 42 of
 	at java.base/jdk.internal.classfile.impl.StackMapGenerator.generate(StackMapGenerator.java:303)
 	at java.base/jdk.internal.classfile.impl.StackMapGenerator.<init>(StackMapGenerator.java:246)
 	at java.base/jdk.internal.classfile.impl.StackMapGenerator.of(StackMapGenerator.java:157)
-	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder$4.generateStackMaps(DirectCodeBuilder.java:341)
-	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder$4.tryGenerateStackMaps(DirectCodeBuilder.java:349)
-	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder$4.writeBody(DirectCodeBuilder.java:384)
+	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder$4.generateStackMaps(DirectCodeBuilder.java:332)
+	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder$4.tryGenerateStackMaps(DirectCodeBuilder.java:340)
+	at java.base/jdk.internal.classfile.impl.DirectCodeBuilder$4.writeBody(DirectCodeBuilder.java:375)
 	at java.base/jdk.internal.classfile.impl.UnboundAttribute$AdHocAttribute.writeTo(UnboundAttribute.java:1099)
 	at java.base/jdk.internal.classfile.impl.Util.writeAttribute(Util.java:230)
 	at java.base/jdk.internal.classfile.impl.AttributeHolder.writeTo(AttributeHolder.java:71)
 	at java.base/jdk.internal.classfile.impl.DirectMethodBuilder.writeTo(DirectMethodBuilder.java:146)
 	at java.base/jdk.internal.classfile.impl.Util.writeList(Util.java:247)
 	at java.base/jdk.internal.classfile.impl.DirectClassBuilder.build(DirectClassBuilder.java:198)
-	at java.base/jdk.internal.classfile.impl.ClassFileImpl.build(ClassFileImpl.java:145)
+	at java.base/jdk.internal.classfile.impl.ClassFileImpl.build(ClassFileImpl.java:146)
 	at java.base/java.lang.classfile.ClassFile.build(ClassFile.java:558)
 	at java.base/java.lang.classfile.ClassFile.buildTo(ClassFile.java:587)
-	at me.vasan.jimple.Compiler.writeClass(Compiler.java:744)
+	at me.vasan.jimple.Compiler.writeClass(Compiler.java:877)
 	at me.vasan.jimple.Compiler.compile(Compiler.java:90)
 	at me.vasan.jimple.Jimple.compile(Jimple.java:46)
 	at me.vasan.jimple.Jimple.compileFile(Jimple.java:168)

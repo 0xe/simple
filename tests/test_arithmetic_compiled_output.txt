@@ -1,1 +1,6 @@
-Compilation failed
+Sum: 15.0
+Diff: 5.0
+Product: 50.0
+Quotient: 2.0
+Negative: -10.0
+Complex: 75.0

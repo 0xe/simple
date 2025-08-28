@@ -1,1 +1,8 @@
 Name: Alice
+Age: 30.0
+Number property: 42.0
+String property: hello
+Boolean property: true
+Company: Tech Corp
+CEO: Bob
+CEO Age: 45.0
